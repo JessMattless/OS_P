@@ -1,0 +1,49 @@
+; Simple assembly boot sector, That prints a message to the screen using a routine
+; The way the a- registers work here (ax, ah, al) are as follows
+; mov ax, 0    -> 0x0000
+; mov ah, 0x56 -> 0x5600
+; mov al, 0x23 -> 0x5623
+; mov ah, 0x16 -> 0x1623
+; mov ax, 0    -> 0.0000
+; These 3 registers are all linked, ax referring to the whole word of data
+; ah reffers to only the first byte, and al reffers to only the second
+
+[org 0x7c00]
+
+    mov bp, 0x9000  ; Set the stack out of the way
+    mov sp, bp      ; We cannot set sp directly so we use bp
+                    ; to set it indirectly
+
+    mov bx, BOOT_MSG_16
+    call print_string
+
+    call switch_to_pm ; We never return from here
+
+    jmp $ ; This is used to jump to the current address in memory (Which in this case loops forever)
+
+; Include the file "x", the line gets replaced with the contents of the file.
+%include "boot/print/print_string.asm" 
+%include "boot/print/print_string_pm.asm" 
+;%include "hex/print_hex.asm"
+;%include "boot/disk/disk_load.asm"
+%include "boot/gdt.asm"
+%include "boot/switch_to_pm.asm"
+
+[bits 32]
+; This is where we end up from switch_to_pm above, after initialising
+; 32 bit protected mode
+BEGIN_PM:
+    mov ebx, BOOT_MSG_32
+    call print_string_pm ; Use the new 32 bit print string routine,
+                         ; as the old one doesn't work now
+
+    jmp $
+
+; Data
+BOOT_MSG_16:               ; Define a label in the file, so you can easily grab the value within it.
+    db 'Booting OS in 16 bit mode', 0  ; Add a 0 to the end of the string, so the program knows when it has hit the end.
+BOOT_MSG_32: db 'Booting OS in 32 bit protected mode', 0
+
+times 510-($-$$) db 0   ; When the code is compiled, the boot sector must be a multiple of 512 butes, the final 2 byutes needing to be 0xaa55
+                        ; This line tells the program to pad the file up to 510 bytes, we add the final 2 manually.
+dw 0xaa55               ; Final 2 bytes used to tell the BIOS this is a boot sector.
