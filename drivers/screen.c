@@ -115,12 +115,12 @@ void print_at(const char *string, int col, int row) {
 
     // char x = &string;
     // print_char(x, -1, -1, WHITE_ON_BLACK);
-    // while(*string != 0) {
-    //     print_char(*string, col, row, WHITE_ON_BLACK);
-        
-    //     string++;
-    // }
 
+    while(*string != 0) {
+        print_char(*string, col, row, WHITE_ON_BLACK);
+        
+        string++;
+    }
 
     // for (int i = 0; i < sizeof(string); i++) {
     //     print_char(string[i], -1, -1, WHITE_ON_BLACK);
