@@ -1,6 +1,6 @@
-compile
 ddrelease64.exe
 *.bxrc
 *.txt
-os-image
+#os-image
 .*
+*.o
