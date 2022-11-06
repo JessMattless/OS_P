@@ -16,14 +16,20 @@ os-image.iso : boot/boot_sect.bin kernel.bin
 # Builds the binary of the kernel from two object files
 # kernel_entry, which jumps to main() in the kernel file
 # the compiled C kernel
-kernel.bin : ${OBJ}
-	ld -T 'linker.ld'
+kernel.bin : screen.o kernel.o
+	ld -T 'linker.ld' --gc-sections
 
 # Rule for compiling C code to object files
 # To make it easier all C files depend on all header files
-%.o : %.c ${HEADERS}
-# gcc -ffreestanding -c $< -o $@
-	gcc -c $< -o $@
+# %.o : %.c ${HEADERS}
+# # gcc -ffreestanding -c $< -o $@
+# 	gcc -c $< -o $@
+
+screen.o:
+	gcc -Idrivers/headers -c drivers/screen.c -o drivers/screen.o
+
+kernel.o:
+	gcc -Idrivers/headers -c kernel/kernel.c -o kernel/kernel.o
 
 # Assemble kernel_entry
 %.o : %.asm
@@ -37,7 +43,7 @@ clean:
 	rm -fr kernel/*.o boot/*.bin drivers/*.o drivers/*.s
 
 clean-all: clean
-	rm os-image
+	rm os-image.iso
 
 source:
 	gcc -S drivers/screen.c -o src/screen.s

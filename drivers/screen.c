@@ -4,7 +4,7 @@ unsigned char port_byte_in(unsigned short port);
 void port_byte_out(unsigned short port, unsigned char data);
 
 // Print a character on screen at col, row or cursor position
-void print_char(const char character, int col, int row, char attribute_byte) {
+void print_char(const char character, const int col, const int row, char attribute_byte) {
     // Create a byte (char) pointer to the start of video memory
     volatile char* vidmem = (volatile char*) VIDEO_ADDRESS;
 
@@ -39,7 +39,6 @@ void print_char(const char character, int col, int row, char attribute_byte) {
         // vidmem[offset] = character;
         // vidmem[offset+1] = attribute_byte;
         vidmem += offset;
-        // *vidmem = 'N';
         *vidmem = character;
         vidmem++;
         *vidmem = attribute_byte;
@@ -97,7 +96,7 @@ void set_cursor(int offset) {
     port_byte_out(REG_SCREEN_DATA, offset);
 }
 
-void print_at(const char *string, int col, int row) {
+void print_at(const char *string, const int col, const int row) {
     // If col and row aren't negative, place cursor at destination specified
     // Else continue normally
     // prints all characters in a string
@@ -106,28 +105,17 @@ void print_at(const char *string, int col, int row) {
         set_cursor(get_screen_offset(col, row));
     }
 
-    // char x = &string;
-    // print_char(x, -1, -1, WHITE_ON_BLACK);
+    print_char(*string, col, row, WHITE_ON_BLACK);
+    string++;
 
-    // while(*string != 0x00) {
-    //     print_char(*string, col, row, WHITE_ON_BLACK);
+    while(*string != 0x00) {
+        print_char(*string, -1, -1, WHITE_ON_BLACK);
         
-    //     string++;
-    // }
-
-    for (int i = 0; i < sizeof(string); i++) {
-        print_char(string[i], -1, -1, WHITE_ON_BLACK);
+        string++;
     }
-
-    // const char* x = "bob";
-    // for (int i = -10; i < 30; i++) {
-    //     print_char(*x, 1, 1, WHITE_ON_BLACK);
-    // }
-
-    // print_char(x[20], -1, -1, WHITE_ON_BLACK);
 }
 
-void print(const char* string) {
+void print(const char *string) {
     // Shorthand method of calling print_at with a col and row of -1
     print_at(string, -1, -1);
 }

@@ -5,7 +5,7 @@ disk_load:
     mov ah, 0x02 ; BIOS read sector function
 
     ;mov dl, 0      ; Read drive 0, in this case the first floppy drive
-    mov al, dh     ; Read 5 sectors from the starting point
+    mov al, dh     ; Read n sectors from the starting point
     mov ch, 0x00   ; Select cylinder 3 from the drive
     mov dh, 0x00   ; Select the track on the second side of the disk, since it is base 0
     mov cl, 0x02   ; Select the 4th sector of the track, this has a base of 1
@@ -15,9 +15,9 @@ disk_load:
     ; The way it works is by setting es to an address,
     ; multiply it by 16 (shift left once), and offsetting it 
     ; based on the value within BX
-    ;mov bx, 0xa000  ; Used to set the es register, because you cannot
-    ;mov es, bx      ; directly give it a hex value
-    ;mov bx, 0x1234  ; Set the offset to 0x1234
+    mov bx, 0x0  ; Used to set the es register, because you cannot
+    mov es, bx      ; directly give it a hex value
+    mov bx, 0x2200  ; Set the offset to 0x1234
     ; In this case, the address would end up as 0xa000:0x1234
     ; This will then be taken as address 0xa1234 by the CPU
 

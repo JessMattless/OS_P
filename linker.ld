@@ -1,28 +1,28 @@
-ENTRY(_start)
+ENTRY(main)
 OUTPUT_FORMAT(elf64-x86-64)
 
-MEMORY {
+/* MEMORY {
     ROM (rx) : ORIGIN = 0, LENGTH = 256k
     RAM (wx) : org = 0x00100000, len = 1M
-}
+} */
+
+SEARCH_DIR(kernel)
+SEARCH_DIR(drivers)
 
 INPUT(
-    kernel/kernel.o
-    kernel/low_level.o
-    drivers/keyboard.o
-    drivers/screen.o
+    kernel.o
+    screen.o
 )
 
 OUTPUT(kernel.bin)
 
 SECTIONS
 {
-    . = 0x8000;
+    . = 0x00000000;
     __start = .;
     __text_start = .;
     .text : {
-       KEEP(*(.text.boot))
-        *(.text_start)
+        *(.text);
     }
     . = ALIGN(4096);
     __text_end = .;
@@ -43,7 +43,7 @@ SECTIONS
 
     __bss_start = .;
     .bss : {
-        bss = .;
+        /* bss = .; */
         *(.bss)
     }
     . = ALIGN(4096);

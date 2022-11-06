@@ -1,0 +1,1 @@
+qemu-system-x86_64.exe -monitor stdio -s -S -drive file=os-image.iso,format=raw,index=0,media=disk

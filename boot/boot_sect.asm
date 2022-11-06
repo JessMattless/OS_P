@@ -4,7 +4,7 @@
 ; mov ah, 0x56 -> 0x5600
 ; mov al, 0x23 -> 0x5623
 ; mov ah, 0x16 -> 0x1623
-; mov ax, 0    -> 0.0000
+; mov ax, 0    -> 0x0000
 ; These 3 registers are all linked, ax referring to the whole word of data
 ; ah reffers to only the first byte, and al reffers to only the second
 

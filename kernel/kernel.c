@@ -1,15 +1,8 @@
+#include "screen.h"
+
 void print_test();
-void print();
-void print_at();
-void clear_screen();
-void print_char();
 
-//TODO: Wtf is this idk fix it
-const char *teststring = (unsigned char*)"hello";
-// // char *testchar = 0x01;
-// const char *testchar = (unsigned char*)'Y';
-
-void _start() {
+void main() {
     // Create a pointer to a char, point it to the first
     // text cell of video memory (the top left of the screen)
     // char* video_memory = (char*) 0xb8000;
@@ -22,48 +15,15 @@ void _start() {
 void print_test() {
     // A function used to test character and string printing
 
-    // char testchar = 'Y';
-
     clear_screen();
 
-    // char* teststring = "Hello";
-    // char x = teststring[0];
+    print_char('H', -1, -1, WHITE_ON_BLACK);
+    print_char('e', -1, -1, WHITE_ON_BLACK);
+	print_char('l', -1, -1, WHITE_ON_BLACK);
+	print_char('l', -1, -1, WHITE_ON_BLACK);
+	print_char('o', -1, -1, WHITE_ON_BLACK);
 
-    // print_char(testchar, -1, -1);
-    // print_char('H', -1, -1);
-    // print_char('e', -1, -1);
-	// print_char('l', -1, -1);
-	// print_char('l', -1, -1);
-	// print_char('o', -1, -1);
-
-    //TODO: Wtf is this idk fix it
-    // print_at(teststring, -1, -1);
-    // print_at("Hello", -1, -1);
-
-    char* pointer = (char*)0x000015600F;
-    char value = *pointer;
-    // char first_byte = pointer[0];
-    // print_char(value);
-
-    // char* str = "He";
-    // char ch = *str;
-
-    char* videomem = (char*) 0xb8000;
-    *videomem = value;
-    videomem++;
-    *videomem = 0x0f;
-    // videomem++;
-    // *videomem = str[1];
-    // videomem++;
-    // *videomem = 0x0f;
-    // videomem++;
-    // *videomem = 'l';
-    // videomem++;
-    // *videomem = 0x0f;
-
-
-    // const char* msg = "Test";
-    // print_at(msg, -1, -1);
+    print_at("Hello", -1, -1);
 
     for (;;) {}
 }

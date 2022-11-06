@@ -5,12 +5,14 @@
 
 ; Not entirely sure how this all works, but it's necessary for 32-bit mode
 ; More Info: https://en.wikipedia.org/wiki/Global_Descriptor_Table
+; IMPORTANT LINKS: https://wiki.osdev.org/GDT_Tutorial
+; https://wiki.osdev.org/Global_Descriptor_Table
 
 gdt_start:
 
 gdt_null:  ; Null descriptor, mandatory
-    dd 0x0 ; dd means double word (4 bytes)
-    dd 0x0
+    dd 0x00000000 ; dd means double word (4 bytes)
+    dd 0x00000000
 
 gdt_code:  ; The code segment descriptor
     ; base = 0x0, limit = 0xfffff
@@ -18,29 +20,37 @@ gdt_code:  ; The code segment descriptor
     ; type flags: (code)1 (conforming)0 (readable)0 (accessed)9 - 1010b
     ; 2nd flags: (granularity)1 (32-bit default)1 (64-bit seg)0 (AVL)0 - 1100b
     dw 0xffff    ; Limit (bits 0-15)
-    dw 0x0       ; Base (bits 0-15)
-    db 0x0       ; Base (bits 16-23)
+    dw 0x0000    ; Base (bits 0-15)
+    db 0x00      ; Base (bits 16-23)
     db 10011010b ; 1st flags (1001b) + type flags (1010b)
     db 11001111b ; 2nd flags, Limit (bits 16-19)
-    db 0x0       ; Base (bits 24-31)
+    db 0x00      ; Base (bits 24-31)
 
 gdt_data:  ; The data segment descriptor
     ; Same as code segment except for different type flags
     ; type flags: (code)0 (expand down)0 (writable)1 (accessed)0 - 0010b
     dw 0xffff    ; Limit (bits 0-15)
-    dw 0x0       ; Base (bits 0-15)
-    db 0x0       ; Base (bits 16-23)
+    dw 0x0000    ; Base (bits 0-15)
+    db 0x00      ; Base (bits 16-23)
     db 10010010b ; 1st flags (1001b) + type flags (0010b)
     db 11001111b ; 2nd flags, Limit (bits 16-19)
     db 0x0       ; Base (bits 24-31)
+
+; gdt_task:
+;     dw 0xffff
+;     dw 0x0000
+;     db 0x00
+;     db 0xFA
+;     db 0xCF
+;     db 0x00
 
 gdt_end:         ; The reason this is here is so the assembler can
                  ; calculate the side of the GDT for the GDT descriptor
 
 gdt_descriptor:
-    dw gdt_end - gdt_start - 1  ; Size of the GDT, always less one
-                                ; of the true size
-    dd gdt_start                ; Start address of the GDT
+    dw gdt_end - gdt_start - 1 ;- gdt_task   ; Size of the GDT, always less one
+                                        ; of the true size
+    dd gdt_start                        ; Start address of the GDT
 
 ; Define some constants for the GDT segment descriptor offsets
 ; these are what segment registers have to contain when running 
@@ -50,3 +60,4 @@ gdt_descriptor:
 ; the data segment (0x0 - NULL; 0x08 - CODE; 0x10 - DATA)
 CODE_SEG equ gdt_code - gdt_start
 DATA_SEG equ gdt_data - gdt_start
+; TASK_STATE_SEG equ gdt_task - gdt_start

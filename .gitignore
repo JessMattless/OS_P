@@ -1,8 +1,10 @@
 ddrelease64.exe
+/tools/*
 *.bxrc
 *.txt
 *.ps1
 *.sh
+# *.bat
 os-image.iso
 .*
 *.o
