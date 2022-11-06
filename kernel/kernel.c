@@ -17,9 +17,6 @@ void _start() {
     // store the char 'X' (display 'X' at the top left of the screen)
     // *video_memory = 'X';
     print_test();
-    while(1){
-        int x = 0;
-    }
 }
 
 void print_test() {
@@ -41,7 +38,34 @@ void print_test() {
 
     //TODO: Wtf is this idk fix it
     // print_at(teststring, -1, -1);
-    print_at("Hello", -1, -1);
+    // print_at("Hello", -1, -1);
+
+    char* pointer = (char*)0x000015600F;
+    char value = *pointer;
+    // char first_byte = pointer[0];
+    // print_char(value);
+
+    // char* str = "He";
+    // char ch = *str;
+
+    char* videomem = (char*) 0xb8000;
+    *videomem = value;
+    videomem++;
+    *videomem = 0x0f;
+    // videomem++;
+    // *videomem = str[1];
+    // videomem++;
+    // *videomem = 0x0f;
+    // videomem++;
+    // *videomem = 'l';
+    // videomem++;
+    // *videomem = 0x0f;
+
+
+    // const char* msg = "Test";
+    // print_at(msg, -1, -1);
+
+    for (;;) {}
 }
 
 /*----------------------------- LOW LEVEL REGISTER MANIPULATION -----------------------------*/

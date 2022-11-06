@@ -1,6 +1,9 @@
 ddrelease64.exe
 *.bxrc
 *.txt
-#os-image
+*.ps1
+*.sh
+os-image.iso
 .*
 *.o
+/src

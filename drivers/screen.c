@@ -41,7 +41,7 @@ void print_char(const char character, int col, int row, char attribute_byte) {
         vidmem += offset;
         // *vidmem = 'N';
         *vidmem = character;
-        vidmem += 1;
+        vidmem++;
         *vidmem = attribute_byte;
     }
 
@@ -102,29 +102,22 @@ void print_at(const char *string, int col, int row) {
     // Else continue normally
     // prints all characters in a string
 
-    volatile char *video = (volatile char*)0xB8000;
-
-    // if (col >= 0 && row >= 0) {
-    //     set_cursor(get_screen_offset(col, row));
-    // }
-
-    while(*string != 0) {
-        *video++ = *string++;
-        *video++ = WHITE_ON_BLACK;
+    if (col >= 0 && row >= 0) {
+        set_cursor(get_screen_offset(col, row));
     }
 
     // char x = &string;
     // print_char(x, -1, -1, WHITE_ON_BLACK);
 
-    while(*string != 0) {
-        print_char(*string, col, row, WHITE_ON_BLACK);
+    // while(*string != 0x00) {
+    //     print_char(*string, col, row, WHITE_ON_BLACK);
         
-        string++;
-    }
-
-    // for (int i = 0; i < sizeof(string); i++) {
-    //     print_char(string[i], -1, -1, WHITE_ON_BLACK);
+    //     string++;
     // }
+
+    for (int i = 0; i < sizeof(string); i++) {
+        print_char(string[i], -1, -1, WHITE_ON_BLACK);
+    }
 
     // const char* x = "bob";
     // for (int i = -10; i < 30; i++) {

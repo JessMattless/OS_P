@@ -43,7 +43,7 @@ load_kernel:
     call print_string       ; of the kernel
 
     mov bx, KERNEL_OFFSET   ; Set up parameters for the disk_load routine
-    mov dh, 15              ; so we load the first 15 sectors (exc the boot sector)
+    mov dh, 20              ; so we load the first n sectors (exc the boot sector)
     mov dl, [BOOT_DRIVE]    ; from the boot disk to the address
     call disk_load          ; specified in KERNEL_OFFSET
 

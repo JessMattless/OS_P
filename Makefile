@@ -6,12 +6,12 @@ HEADERS = $(wildcard kernel/*.h drivers/*.h)
 OBJ = $(C_SOURCES:.c=.o)
 
 # Default build target
-all : os-image clean
+all : os-image.iso clean
 
 # The disk image that the computer uses to load
 # A combination of the kernel and boot sector
-os-image : boot/boot_sect.bin kernel.bin
-	cat $^ > os-image
+os-image.iso : boot/boot_sect.bin kernel.bin
+	cat $^ > os-image.iso
 
 # Builds the binary of the kernel from two object files
 # kernel_entry, which jumps to main() in the kernel file
@@ -34,7 +34,13 @@ kernel.bin : ${OBJ}
 
 clean:
 	rm -fr *.bin *.dis *.o
-	rm -fr kernel/*.o boot/*.bin drivers/*.o
+	rm -fr kernel/*.o boot/*.bin drivers/*.o drivers/*.s
 
 clean-all: clean
 	rm os-image
+
+source:
+	gcc -S drivers/screen.c -o src/screen.s
+
+cleans:
+	rm -fr src/*.s
