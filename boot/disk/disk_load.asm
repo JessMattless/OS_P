@@ -15,9 +15,9 @@ disk_load:
     ; The way it works is by setting es to an address,
     ; multiply it by 16 (shift left once), and offsetting it 
     ; based on the value within BX
-    mov bx, 0x0  ; Used to set the es register, because you cannot
+    mov bx, 0x0008  ; Used to set the es register, because you cannot
     mov es, bx      ; directly give it a hex value
-    mov bx, 0x2200  ; Set the offset to 0x1234
+    mov bx, 0x0100  ; Set the offset to 0x1234
     ; In this case, the address would end up as 0xa000:0x1234
     ; This will then be taken as address 0xa1234 by the CPU
 

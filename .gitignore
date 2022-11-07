@@ -8,4 +8,4 @@ ddrelease64.exe
 os-image.iso
 .*
 *.o
-/src
+/src/*

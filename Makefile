@@ -46,7 +46,10 @@ clean-all: clean
 	rm os-image.iso
 
 source:
-	gcc -S drivers/screen.c -o src/screen.s
+	gcc -Idrivers/headers -S drivers/screen.c -o src/screen.s
+
+preprocess:
+	gcc -Idrivers/headers -E drivers/screen.c -o src/screen.i
 
 cleans:
 	rm -fr src/*.s

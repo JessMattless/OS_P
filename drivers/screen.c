@@ -106,15 +106,23 @@ void print_at(const char *string, const int col, const int row) {
     }
 
     // Print the first character in the string at the specified col/row
-    print_char(*string, col, row, WHITE_ON_BLACK);
-    string++;
+    // xp /5cb 0x2180
+    // Above is the command that should show in memory 
+    const char* theChar = (char*)&string;
+    // const char x = test[0];
+    // char* theChar = (char*)0x2180;
+    print_char(*theChar, col, row, WHITE_ON_BLACK);
+    theChar++;
+
+    // print_char(*string, col, row, WHITE_ON_BLACK);
+    // string++;
 
     // Loop through the remaining characters in the string and place them at
     // the next location in video memory
-    while(*string != 0x00) {
-        print_char(*string, -1, -1, WHITE_ON_BLACK);
+    while(*theChar != 0x00) {
+        print_char(*theChar, -1, -1, WHITE_ON_BLACK);
         
-        string++;
+        theChar++;
     }
 }
 
