@@ -97,17 +97,20 @@ void set_cursor(int offset) {
 }
 
 void print_at(const char *string, const int col, const int row) {
-    // If col and row aren't negative, place cursor at destination specified
-    // Else continue normally
     // prints all characters in a string
 
+    // If col and row aren't negative, place cursor at destination specified
+    // Else continue normally
     if (col >= 0 && row >= 0) {
         set_cursor(get_screen_offset(col, row));
     }
 
+    // Print the first character in the string at the specified col/row
     print_char(*string, col, row, WHITE_ON_BLACK);
     string++;
 
+    // Loop through the remaining characters in the string and place them at
+    // the next location in video memory
     while(*string != 0x00) {
         print_char(*string, -1, -1, WHITE_ON_BLACK);
         
