@@ -5,12 +5,10 @@ HEADERS = $(wildcard kernel/*.h drivers/*.h)
 #Convert all .c file names to .o to give a list of needed object files
 OBJ = $(C_SOURCES:.c=.o)
 
-UNAME := $(shell uname)
-
-.PHONY: clean clean-all run
+.PHONY: clean clean-all
 
 # Default build target
-all : os-image.iso clean run
+all : os-image.iso clean runqemu.sh runqemu.bat
 
 # The disk image that the computer uses to load
 # A combination of the kernel and boot sector
@@ -47,6 +45,9 @@ clean:
 clean-all: clean
 	rm os-image.iso
 
-run:
-	echo 'qemu-system-x86_64 -monitor stdio -drive file=os-image.iso,format=raw,index=0,media=disk' > runqemu.sh
+runqemu.bat:
 	echo 'qemu-system-x86_64.exe -monitor stdio -drive file=os-image.iso,format=raw,index=0,media=disk' > runqemu.bat
+
+runqemu.sh:
+	echo 'qemu-system-x86_64 -monitor stdio -drive file=os-image.iso,format=raw,index=0,media=disk' > runqemu.sh
+	chmod +x runqemu.sh

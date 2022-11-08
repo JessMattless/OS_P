@@ -109,17 +109,38 @@ void print_at(const char *string, const int col, const int row) {
     // xp /5cb 0x2180
     // Above is the command that should show in memory 
 
-    // const char* theChar = (char*)&string;
-    char* theChar = (char*)0x2180;
-    print_char(*theChar, -1, -1, WHITE_ON_BLACK);
-    theChar++;
+    // const char* theChar = string;
+
+    // string += 0x11a4; // 0x11c8 0x11ca
+
+    // if (string < (char*)0x2180) {
+    //     print_char('<', 1, 0, WHITE_ON_BLACK);
+    // }
+    // else if (string > (char*)0x2180) {
+    //     print_char('>', 1, 0, WHITE_ON_BLACK);
+    // }
+    // else if (string == (char*)0x2180) {
+    //     print_char('=', 1, 0, WHITE_ON_BLACK);
+    // }
+
+    // string += 0x11a3;
+    string += 0x11a3 + 25 + 25;
+
+    // string += 0x11b9;
+    // string += 0x11b9 + 25;
+    // string += 0x11d2; // 0x11cc + 6
+
+    // string += 6;
+
+    print_char(*string, col, row, WHITE_ON_BLACK);
+    string++;
 
     // Loop through the remaining characters in the string and place them at
     // the next location in video memory
-    while(*theChar != 0x00) {
-        print_char(*theChar, -1, -1, WHITE_ON_BLACK);
+    while(*string != 0x00) {
+        print_char(*string, -1, -1, WHITE_ON_BLACK);
 
-        theChar++;
+        string++;
     }
 }
 
