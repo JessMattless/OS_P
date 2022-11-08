@@ -4,7 +4,7 @@ ddrelease64.exe
 *.txt
 *.ps1
 *.sh
-# *.bat
+runqemu.bat
 os-image.iso
 .*
 *.o

@@ -17,11 +17,11 @@ void print_test() {
 
     clear_screen();
 
-    print_char('H', -1, -1, WHITE_ON_BLACK);
-    print_char('e', -1, -1, WHITE_ON_BLACK);
-	print_char('l', -1, -1, WHITE_ON_BLACK);
-	print_char('l', -1, -1, WHITE_ON_BLACK);
-	print_char('o', -1, -1, WHITE_ON_BLACK);
+    // print_char('H', -1, -1, WHITE_ON_BLACK);
+    // print_char('e', -1, -1, WHITE_ON_BLACK);
+	// print_char('l', -1, -1, WHITE_ON_BLACK);
+	// print_char('l', -1, -1, WHITE_ON_BLACK);
+	// print_char('o', -1, -1, WHITE_ON_BLACK);
 
     print_at("Hello", -1, -1);
 

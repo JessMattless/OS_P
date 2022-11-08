@@ -53,7 +53,6 @@ void print_char(const char character, const int col, const int row, char attribu
     set_cursor(offset);
 }
 
-// TODO, use the wiki the PDF is no longer viable
 int get_screen_offset(int col, int row) {
     // Calculate the screen offset for the cursor using the column and row given
     // multiply the result by 2 because each character takes up 2 bytes
@@ -106,22 +105,20 @@ void print_at(const char *string, const int col, const int row) {
     }
 
     // Print the first character in the string at the specified col/row
+
     // xp /5cb 0x2180
     // Above is the command that should show in memory 
-    const char* theChar = (char*)&string;
-    // const char x = test[0];
-    // char* theChar = (char*)0x2180;
-    print_char(*theChar, col, row, WHITE_ON_BLACK);
-    theChar++;
 
-    // print_char(*string, col, row, WHITE_ON_BLACK);
-    // string++;
+    // const char* theChar = (char*)&string;
+    char* theChar = (char*)0x2180;
+    print_char(*theChar, -1, -1, WHITE_ON_BLACK);
+    theChar++;
 
     // Loop through the remaining characters in the string and place them at
     // the next location in video memory
     while(*theChar != 0x00) {
         print_char(*theChar, -1, -1, WHITE_ON_BLACK);
-        
+
         theChar++;
     }
 }
