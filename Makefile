@@ -1,11 +1,14 @@
 # Automatically generate all needed sources using wildcards
 C_SOURCES = $(wildcard kernel/*.c drivers/*.c)
-HEADERS = $(wildcard kernel/*.h drivers/*.h)
+HEADERS = $(wildcard kernel/headers/*.h drivers/headers/*.h)
 
 #Convert all .c file names to .o to give a list of needed object files
 OBJ = $(C_SOURCES:.c=.o)
 
 .PHONY: clean clean-all
+
+EFLAGS := -Wall
+CFLAGS := -g -std=gnu99 -fno-stack-protector
 
 # Default build target
 all : os-image.iso clean runqemu.sh runqemu.bat
@@ -18,20 +21,20 @@ os-image.iso : boot/boot_sect.bin kernel.bin
 # Builds the binary of the kernel from two object files
 # kernel_entry, which jumps to main() in the kernel file
 # the compiled C kernel
-kernel.bin : ${OBJ}
-	ld -T 'linker.ld' --gc-sections
+kernel.bin : ${OBJ} kernel_entry.o
+	ld -T 'linker.ld'
+# ld -T 'linker.ld' --gc-sections
 
 # Rule for compiling C code to object files
 %.o : %.c
-	gcc -Idrivers/headers -c $< -o $@
-
-# screen.o:
-# 	gcc -Idrivers/headers -c drivers/screen.c -o drivers/screen.o
-
-# kernel.o:
-# 	gcc -Idrivers/headers -c kernel/kernel.c -o kernel/kernel.o
+# gcc -Ikernel/headers -Idrivers/headers -c $< -o $@ $(CFLAGS)
+	gcc -Ikernel/headers -Idrivers/headers -c $< -o $@ $(CFLAGS) $(EFLAGS)
 
 # Assemble kernel_entry
+kernel_entry.o:
+	nasm kernel/kernel_entry.asm -f elf64 -o kernel/kernel_entry.o
+# gcc kernel/kernel_entry.s -o kernel/kernel_entry.o
+
 %.o : %.asm
 	nasm $< -f elf -o $@
 
