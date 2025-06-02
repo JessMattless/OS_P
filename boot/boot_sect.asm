@@ -42,9 +42,6 @@ load_kernel:
     mov bx, MSG_LOAD_KERNEL ; Print a message on screen to notify the loading
     call print_string       ; of the kernel
 
-    mov bx, KERNEL_OFFSET   ; Set up parameters for the disk_load routine
-    mov dh, 20              ; so we load the first n sectors (exc the boot sector)
-    mov dl, [BOOT_DRIVE]    ; from the boot disk to the address
     call disk_load          ; specified in KERNEL_OFFSET
 
     ret
@@ -64,7 +61,7 @@ BEGIN_PM:
 ; Data
 ; Define a label in the file, so you can easily grab the value within it.
 ; Add a 0 to the end of the string, so the program knows when it has hit the end.
-BOOT_DRIVE       db 0
+BOOT_DRIVE       db 0x80
 BOOT_MSG_16      db 'Booting OS in 16-bit mode', 0  
 BOOT_MSG_32      db 'Booting OS in 32-bit protected mode', 0
 MSG_LOAD_KERNEL  db 'Loading kernel into memory', 0

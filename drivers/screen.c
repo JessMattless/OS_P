@@ -54,11 +54,11 @@ void put_char(char ch, char color, int col, int row) {
     if (col >= 0 && row >= 0) offset = get_screen_offset(col, row);
     // Else use the current cursor position
     else offset = get_cursor();
+    
+    video_memory[offset] = ch;
+    video_memory[offset + 1] = color;
+    
     offset += 2;
-
-    video_memory[offset + 1] = ch;
-    video_memory[offset] = color;
-
 
     // Update the cursor position on the screen
     set_cursor(offset);
@@ -84,8 +84,15 @@ void put_string(const char* string, char color, int col, int row) {
     // put_char(*string, color, col, row);
     // string++;
 
+    // string += 0x2000;
+
+
     // Loop through the remaining characters in the string and place them at
     // the next location in video memory
+    // for (int i = 0; i < 2000; i++){
+    //     put_char(*string, color, -1, -1);
+    //     string++;
+    // }
     while(*string != 0x00) {
         put_char(*string, color, -1, -1);
         string++;

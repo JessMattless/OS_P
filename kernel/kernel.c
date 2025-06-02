@@ -15,9 +15,9 @@ void kernel_main(void) {
     set_cursor(0);
 
 
-    // print_char('A');
-    // print("Hello");
-    // print_char('B');
+    print_char('H');
+    print("Hello");
+    print_char('o');
 
     while (1) {} // Infinite loop to keep the kernel running
 }

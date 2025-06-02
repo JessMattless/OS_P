@@ -22,21 +22,21 @@ os-image.iso : boot/boot_sect.bin kernel.bin
 # Builds the binary of the kernel from two object files
 # kernel_entry, which jumps to main() in the kernel file
 # the compiled C kernel
-kernel.bin : ${OBJ} kernel_entry.o
+kernel.bin : ${OBJ} kernel/kernel_entry.o
 # ld -T 'linker.ld'
-	ld -T 'linker.ld' -o kernel.elf
+	ld -m elf_i386 -T 'linker.ld' -o kernel.elf
 	objcopy -O binary kernel.elf kernel.bin
 
 # Rule for compiling C code to object files
 %.o : %.c
-	gcc -Ikernel/headers -Idrivers/headers -c $< -o $@ $(CFLAGS) $(EFLAGS)
+	gcc -m32 -Ikernel/headers -Idrivers/headers -c $< -o $@ $(CFLAGS) $(EFLAGS)
 
 # Assemble kernel_entry
-kernel_entry.o:
-	nasm kernel/kernel_entry.asm -f elf64 -o kernel/kernel_entry.o
+kernel/kernel_entry.o:
+	nasm kernel/kernel_entry.asm -f elf32 -o kernel/kernel_entry.o
 
 %.o : %.asm
-	nasm $< -f elf -o $@
+	nasm $< -f elf32 -o $@
 
 %.bin : %.asm
 	nasm $< -f bin -I '../../16bit/' -o $@

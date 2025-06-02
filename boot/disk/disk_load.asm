@@ -1,14 +1,11 @@
 disk_load:
-    push dx     ; Push DX on the stack so we can read the number of
-                ; requested sectors later for comparison.
-
     mov ah, 0x02 ; BIOS read sector function
 
-    ;mov dl, 0      ; Read drive 0, in this case the first floppy drive
-    mov al, dh     ; Read n sectors from the starting point
-    mov ch, 0x00   ; Select cylinder 3 from the drive
+    mov ch, 0x00   ; Select cylinder 0 from the drive
     mov dh, 0x00   ; Select the track on the second side of the disk, since it is base 0
-    mov cl, 0x02   ; Select the 4th sector of the track, this has a base of 1
+    mov cl, 0x02   ; Start at sector 2 (BIOS sector 2, which is the first sector after the boot sector)
+    mov al, 20             ; so we load the first n sectors (exc the boot sector)
+    mov dl, [BOOT_DRIVE]    ; Read drive 0x80, in this case the hard drive
 
     ; Set the address that we want the BIOS to read the sectors to
     ; The BIOS expects to find this address in ES:BX.
@@ -18,19 +15,18 @@ disk_load:
     ; mov bx, 0x0008  ; Used to set the es register, because you cannot
     mov bx, 0x0000  ; Used to set the es register, because you cannot
     mov es, bx      ; directly give it a hex value
-    mov bx, 0x2000  ; Set the offset to 0x1234
+    mov bx, KERNEL_OFFSET  ; Set the offset to 0x1234
     ; In this case, the address would end up as 0xa000:0x1234
     ; This will then be taken as address 0xa1234 by the CPU
 
     int 0x13 ; Call the BIOS interrupt that reads the sector(s)
 
-    jc disk_error   ; jc is a jumping instruction,
+    ; jc disk_error  ; jc is a jumping instruction,
                     ; that only jumps if the carry flag is set.
                     ; We use this to check if the number of sections requested
                     ; and the number of sections read is the same
-    pop dx
-    cmp dh, al       ; Compare the number of sectors read to the number requested
-    jne disk_error
+                    ; TODO: Fix the 0x0e Error that appears in the AH register after int 0x13
+
     ret
 
 disk_error:
@@ -38,4 +34,4 @@ disk_error:
     call print_string
     jmp $ ; stay here forever
 
-DISK_ERROR_MSG: db "Disk read error", 0
+DISK_ERROR_MSG: db 'Disk read error', 0
