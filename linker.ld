@@ -1,10 +1,5 @@
 ENTRY(_start)
-OUTPUT_FORMAT(elf64-x86-64)
-
-/* MEMORY {
-    ROM (rx) : ORIGIN = 0, LENGTH = 256k
-    RAM (wx) : org = 0x00100000, len = 1M
-} */
+OUTPUT_FORMAT(elf32-i386)
 
 SEARCH_DIR(drivers)
 SEARCH_DIR(kernel)
@@ -20,36 +15,21 @@ OUTPUT(kernel.bin)
 
 SECTIONS
 {
-    . = 1M;
-    __start = .;
-    __text_start = .;
-    .text : {
-        /* kernel_entry.o(.text) */
+    . = 0x2000;
+    .text BLOCK(4K) : ALIGN(4K) {
         *(.text);
     }
-    . = ALIGN(4096);
-    __text_end = .;
 
-    __rodata_start = .;
-    .rodata : {
+    .rodata BLOCK(4K) : ALIGN(4K) {
         *(.rodata)
     }
-    . = ALIGN(4096);
-    __rodata_end = .;
 
-    __data_start = .;
-    .data : {
+    .data BLOCK(4K) : ALIGN(4K) {
         *(.data)
     }
-    . = ALIGN(4096);
-    __data_end = .;
-
-    __bss_start = .;
-    .bss : {
+    
+    .bss BLOCK(4K) : ALIGN(4K) {
         *(COMMON)
         *(.bss)
     }
-    . = ALIGN(4096);
-    __bss_end = .;
-    __end = .;
 }

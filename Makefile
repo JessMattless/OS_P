@@ -16,24 +16,24 @@ all : os-image.iso clean runqemu.sh runqemu.bat
 # The disk image that the computer uses to load
 # A combination of the kernel and boot sector
 os-image.iso : boot/boot_sect.bin kernel.bin
-	cat $^ > os-image.iso
+	dd if=boot/boot_sect.bin of=os-image.iso conv=notrunc bs=512 seek=0 count=1
+	dd if=kernel.bin of=os-image.iso conv=notrunc bs=512 seek=1 count=128
 
 # Builds the binary of the kernel from two object files
 # kernel_entry, which jumps to main() in the kernel file
 # the compiled C kernel
 kernel.bin : ${OBJ} kernel_entry.o
-	ld -T 'linker.ld'
-# ld -T 'linker.ld' --gc-sections
+# ld -T 'linker.ld'
+	ld -T 'linker.ld' -o kernel.elf
+	objcopy -O binary kernel.elf kernel.bin
 
 # Rule for compiling C code to object files
 %.o : %.c
-# gcc -Ikernel/headers -Idrivers/headers -c $< -o $@ $(CFLAGS)
 	gcc -Ikernel/headers -Idrivers/headers -c $< -o $@ $(CFLAGS) $(EFLAGS)
 
 # Assemble kernel_entry
 kernel_entry.o:
 	nasm kernel/kernel_entry.asm -f elf64 -o kernel/kernel_entry.o
-# gcc kernel/kernel_entry.s -o kernel/kernel_entry.o
 
 %.o : %.asm
 	nasm $< -f elf -o $@
@@ -42,7 +42,7 @@ kernel_entry.o:
 	nasm $< -f bin -I '../../16bit/' -o $@
 
 clean:
-	rm -fr *.bin *.dis *.o
+	rm -fr *.bin *.dis *.o *.elf
 	rm -fr kernel/*.o boot/*.bin drivers/*.o
 
 clean-all: clean
