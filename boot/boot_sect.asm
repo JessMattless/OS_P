@@ -23,6 +23,8 @@ KERNEL_OFFSET equ 0x2000 ; This is the memory offset used to load the kernel
 
     call print_new_line
 
+    call load_graphics_mode
+
     call load_kernel
 
     call switch_to_pm ; We never return from here
@@ -44,6 +46,19 @@ load_kernel:
 
     call disk_load          ; specified in KERNEL_OFFSET
 
+    ret
+
+load_graphics_mode:
+    push ax
+    mov ah, 0x00 ; Sets interrupt to set video mode
+    mov al, 0x13 ; Graphics mode: VGA
+                 ; 320 x 200 resolution
+                 ; 16 colors
+                 ; A0000 Video address start
+
+    int 0x10 ; BIOS interrupt
+
+    pop ax
     ret
 
 [bits 32]
