@@ -39,9 +39,7 @@ void clear_screen() {
     }
 }
 
-void put_char(char ch, char color, int col, int row) {
-    //TODO: Handle scrolling.
-    
+void put_char(char ch, char color, int col, int row) {    
     if (ch == 0x00) ch = ' '; // If the character is null, replace it with a space
 
     // Create a pointer to the start of video memory
@@ -154,4 +152,47 @@ void set_cursor(int offset) {
     port_byte_out(REG_SCREEN_DATA, (unsigned char)(offset >> 8));
     port_byte_out(REG_SCREEN_CTRL, 15);
     port_byte_out(REG_SCREEN_DATA, (unsigned char)(offset & 0xFF));
+}
+
+void scroll_screen(int lines) {
+    // For now, this just discards the data in the top row of the terminal, and moves everything up by 1 line
+    // TODO: Allow scrolling in both directions, will require saving the information scrolled so you can display it again
+
+    int offset = get_cursor() / 2; // Get cursor in terminal space
+    volatile char* video_memory = (volatile char*) VIDEO_ADDRESS;
+
+    if (lines < 1) lines = 1; // Added for now to prevent scrolling
+    
+    if (offset + (MAX_COLS * 2) > MAX_COLS * MAX_ROWS) {
+        // if the cursor is on the bottom 2 rows of the terminal, set the minimum scroll to 2 lines, to give a buffer at the bottom of the screen.
+        if (lines < 2) lines = 2;
+    }
+
+    int scrollOffset = 0;
+
+    // For each character in the terminal excluding the lines to be sent offscreen at the top
+    for (int i = MAX_COLS * lines; i < (MAX_COLS * MAX_ROWS); i++) {
+        unsigned short chData = get_char_data(i*2);
+        // put_char(chData & 0xFF, chData >> 8, -1, -1);
+
+        video_memory[scrollOffset] = chData & 0xFF;
+        video_memory[scrollOffset + 1] = chData >> 8;
+
+        scrollOffset += 2;
+    }
+
+    offset -= MAX_COLS * lines;
+    set_cursor(offset * 2);
+}
+
+// To get data back: 
+// char: chData & 0xFF
+// color: chData >> 8
+unsigned short get_char_data(int offset) {
+    volatile char* video_memory = (volatile char*) VIDEO_ADDRESS;
+
+    // take the specified character and corresponding color, and add it to a short to be returned.
+    unsigned short chData = ((video_memory[offset + 1] << 8) & 0xFF00) | (video_memory[offset] & 0xFF);
+
+    return chData;
 }

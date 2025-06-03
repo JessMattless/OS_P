@@ -13,6 +13,10 @@
 void terminal_init();
 void clear_screen();
 
+void scroll_screen(int lines);
+
+unsigned short get_char_data(int offset);
+
 void put_char(char ch, char color, int col, int row);
 void print_char(char ch);
 

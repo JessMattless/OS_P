@@ -23,8 +23,21 @@ void kernel_main(void) {
     print("Hello there_");
     print_char(0x09);
     print_char('X');
+    print_char(0x0A);
+    print("Hello there");
+    print_char(0x09);
     print_char('X');
-    print_char(0x08);
+    print_char(0x0A);
+    print("Hello there_");
+    print_char(0x09);
+    print_char('X');
+    print_char(0x0A);
+    print("Hello there");
+    print_char(0x09);
+    print_char('X');
+
+    scroll_screen(1);
+
     // print_char('X');
 
     while (1) {} // Infinite loop to keep the kernel running
