@@ -21,7 +21,7 @@ switch_to_pm:
                             ; instructions are run on the now 32-bit CPU
 
     [bits 32]
-    ; Initialise the registers and stack, now in 32-bit protected mode
+    ; Initialize the registers and stack, now in 32-bit protected mode
     init_pm:
         mov ax, DATA_SEG    ; Now in 32-bit mode, any old segments are useless
         mov ds, ax          ; so we now point any segment registers to the
