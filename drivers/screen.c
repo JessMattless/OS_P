@@ -40,7 +40,6 @@ void clear_screen() {
 }
 
 void put_char(char ch, char color, int col, int row) {
-    //TODO: Sort out special characters, // e.g. newline, tab, backspace, etc.
     //TODO: Handle scrolling.
     
     if (ch == 0x00) ch = ' '; // If the character is null, replace it with a space
@@ -55,10 +54,36 @@ void put_char(char ch, char color, int col, int row) {
     // Else use the current cursor position
     else offset = get_cursor();
     
-    video_memory[offset] = ch;
-    video_memory[offset + 1] = color;
+    switch (ch) {
+        case 0x00: // Null
+            ch = ' ';
+        case 0x08: // Backspace
+            offset -= 2;
+            video_memory[offset] = ' ';
+            break;
+        case 0x09: // Tab
+            int currentCol = (offset / 2) % MAX_COLS;
+            int tabOffset = (currentCol % 8);
+            for (int i = 0; i < 8 - tabOffset; i++) {
+                video_memory[offset] = ' ';
+                video_memory[offset + 1] = color;
+                offset += 2;
+            }
+            break;
+        case 0x0A: // Line Feed
+            int adjustedOffset = offset / 2;
+            adjustedOffset += MAX_COLS - (adjustedOffset % MAX_COLS);
+            offset = adjustedOffset * 2;
+            break;
+        case 0x0D: // Carriage Return
+        default: // Most characters
+            video_memory[offset] = ch;
+            video_memory[offset + 1] = color;
     
-    offset += 2;
+            offset += 2;
+            break;
+    }
+
 
     // Update the cursor position on the screen
     set_cursor(offset);
@@ -77,22 +102,6 @@ void put_string(const char* string, char color, int col, int row) {
         set_cursor(get_screen_offset(col, row));
     }
 
-    // const char* point;
-    // point = string;
-
-    // Print the first character in the string at the specified col/row
-    // put_char(*string, color, col, row);
-    // string++;
-
-    // string += 0x2000;
-
-
-    // Loop through the remaining characters in the string and place them at
-    // the next location in video memory
-    // for (int i = 0; i < 2000; i++){
-    //     put_char(*string, color, -1, -1);
-    //     string++;
-    // }
     while(*string != 0x00) {
         put_char(*string, color, -1, -1);
         string++;
