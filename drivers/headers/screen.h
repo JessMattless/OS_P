@@ -10,6 +10,23 @@
 #define REG_SCREEN_CTRL 0x3D4
 #define REG_SCREEN_DATA 0x3D5
 
+#define INTRO_LOGO \
+"                            &&&&&&&&&&&&&&&&&&&&&&"\
+"\n                      &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"\
+"\n                       @@@@@@@@&&&&&&&&&&&&&&&&@@@@@@@@"\
+"\n                        @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"\
+"\n                        @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"\
+"\n                        @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"\
+"\n                         @@@@@@@@@@@@@@@@@@@@@@@@@@@@"\
+"\n                         @@@@@@@@@@@@@@@@@@@@@@@@@@@@"\
+"\n                         @@@@@@@@@@@@@@@@@@@@@@@@@@@@"\
+"\n                     @@@///////@@@@@@@@@@@@@@@@///////@@@"\
+"\n                  @@@@@@@////////////////////////////@@@@@@@"\
+"\n                @@@@@@@@@@@@///////////////////////@@@@@@@@@@"\
+"\n                  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"\
+"\n                       @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"\
+"\n                              @@@@@@@@@@@@@@@@@"
+
 void terminal_init();
 void clear_screen();
 
@@ -20,11 +37,15 @@ unsigned short get_char_data(int offset);
 void put_char(char ch, char color, int col, int row);
 void print_char(char ch);
 
+void new_line();
+
 void put_string(const char* string, char color, int col, int row);
 void print(const char* string);
 
 int get_screen_offset(int col, int row);
 int get_cursor();
 void set_cursor(int offset);
+
+void print_intro();
 
 #endif

@@ -26,6 +26,9 @@ static inline char get_color(enum vga_color fg, enum vga_color bg) {
 
 void terminal_init() {
     clear_screen();
+    set_cursor(0);
+
+    print_intro();
     
     //TODO: Print things like logo and info to screen.
 }
@@ -72,6 +75,7 @@ void put_char(char ch, char color, int col, int row) {
             int adjustedOffset = offset / 2;
             adjustedOffset += MAX_COLS - (adjustedOffset % MAX_COLS);
             offset = adjustedOffset * 2;
+            
             break;
         case 0x0D: // Carriage Return
         default: // Most characters
@@ -91,6 +95,10 @@ void print_char(char ch) {
     put_char(ch, get_color(COLOR_WHITE, COLOR_BLACK), -1, -1);
 }
 
+void new_line() {
+    print_char(0x0A);
+}
+
 void put_string(const char* string, char color, int col, int row) {
     // prints all characters in a string
 
@@ -101,8 +109,18 @@ void put_string(const char* string, char color, int col, int row) {
     }
 
     while(*string != 0x00) {
-        put_char(*string, color, -1, -1);
-        string++;
+        // if (*string == '\') put_char(0x0A, color, -1, -1);
+        if (*string == '\\') {
+            switch (*(string + 1)) {
+                case 'n':
+                put_char(0x0A, color, -1, -1);
+                string += 2;
+            }
+        }
+        else {
+            put_char(*string, color, -1, -1);
+            string++;
+        }
     }
 }
 
@@ -195,4 +213,9 @@ unsigned short get_char_data(int offset) {
     unsigned short chData = ((video_memory[offset + 1] << 8) & 0xFF00) | (video_memory[offset] & 0xFF);
 
     return chData;
+}
+
+void print_intro() { 
+    print(INTRO_LOGO);
+    new_line(get_cursor());
 }
