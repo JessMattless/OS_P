@@ -1,6 +1,7 @@
 #include "screen.h"
 #include "bytes.h"
 #include "interrupts.h"
+#include "keyboard.h"
 
 void screen_init() {
 
@@ -54,7 +55,8 @@ void put_pixel(int pos_x, int pos_y, unsigned char color) {
 void screen_test() {
     for (int y = 0; y < SCREEN_HEIGHT; y++) {
         for (int x = 0; x < SCREEN_WIDTH; x++) {
-            put_pixel(x, y, (y + x) + (GPT % 256));
+            if (test == 0) put_pixel(x, y, (y + x) + (GPT % 256));
+            else if (test == 1) put_pixel(x, y, (y + x) - (GPT % 256));
         }
     }
 }

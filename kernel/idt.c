@@ -5,7 +5,12 @@ struct IDT_Segment idt[256];
 
 extern void _isr_stub();
 
+/* Begin ISR Externs */
+
 ISR_EXTERN(32);
+ISR_EXTERN(33);
+
+/* End of ISR Externs*/
 
 // Create entries pointing to defined functions to fill the IDT
 void create_IDT_entry(unsigned int interrupt_no, void (*handler)()) {
@@ -25,6 +30,7 @@ void init_IDT() {
     /* Begin ISR definitions*/
 
     create_IDT_entry(0x20, isr32);
+    create_IDT_entry(0x21, isr33);
 
     /* End of ISR Definitions */
 
