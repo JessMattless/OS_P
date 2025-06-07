@@ -17,7 +17,7 @@ gdt_null:  ; Null descriptor, mandatory
 gdt_code:  ; The code segment descriptor
     ; base = 0x0, limit = 0xfffff
     ; Access Byte: (present)1 (privilege)00 (descriptor type) 1 - 1001b
-    ; Cont: (code)1 (conforming)0 (readable)0 (accessed)9 - 1010b
+    ; Cont: (code)1 (conforming)0 (readable)0 (accessed)1 - 1010b
     ; Flags: (granularity)1 (32-bit default)1 (64-bit seg)0 (AVL)0 - 1100b
     dw 0xffff    ; Limit (bits 0-15)
     dw 0x0000    ; Base (bits 16-31)
@@ -33,15 +33,15 @@ gdt_data:  ; The data segment descriptor
     db 0x00      ; Base (bits 32-39)
     db 10010011b ; Access Byte (40-47)
     db 11001111b ; Flags, Limit (bits 48-55)
-    db 0x0       ; Base (bits 56-63)
+    db 0x00      ; Base (bits 56-63)
 
-; gdt_task:
-;     dw 0xffff
-;     dw 0x0000
-;     db 0x00
-;     db 0xFA
-;     db 0xCF
-;     db 0x00
+gdt_task:
+    dw 0xffff
+    dw 0x0000
+    db 0x00
+    db 10001001b
+    db 11001111b
+    db 0x00
 
 gdt_end:         ; The reason this is here is so the assembler can
                  ; calculate the size of the GDT for the GDT descriptor
@@ -59,4 +59,4 @@ gdt_descriptor:
 ; the data segment (0x0 - NULL; 0x08 - CODE; 0x10 - DATA)
 CODE_SEG equ gdt_code - gdt_start
 DATA_SEG equ gdt_data - gdt_start
-; TASK_STATE_SEG equ gdt_task - gdt_start
+TASK_STATE_SEG equ gdt_task - gdt_start

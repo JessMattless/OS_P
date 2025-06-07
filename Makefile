@@ -1,9 +1,12 @@
 # Automatically generate all needed sources using wildcards
 C_SOURCES = $(wildcard kernel/*.c drivers/*.c)
 HEADERS = $(wildcard kernel/headers/*.h drivers/headers/*.h)
+ASM_SOURCES := $(wildcard kernel/*.asm)
+ASM_SOURCES := $(filter-out kernel/kernel_entry.asm, $(ASM_SOURCES))
 
 #Convert all .c file names to .o to give a list of needed object files
 OBJ = $(C_SOURCES:.c=.o)
+ASMOBJ = $(ASM_SOURCES:.asm=.o)
 
 .PHONY: clean clean-all
 
@@ -22,9 +25,9 @@ os-image.iso : boot/boot_sect.bin kernel.bin
 # Builds the binary of the kernel from two object files
 # kernel_entry, which jumps to main() in the kernel file
 # the compiled C kernel
-kernel.bin : ${OBJ} kernel/kernel_entry.o
+kernel.bin : ${ASMOBJ} ${OBJ} kernel/kernel_entry.o
 # ld -T 'linker.ld'
-	ld -m elf_i386 -T 'linker.ld' -o kernel.elf
+	ld -m elf_i386 -T 'linker.ld' -o kernel.elf kernel/kernel_entry.o ${ASMOBJ} ${OBJ}
 	objcopy -O binary kernel.elf kernel.bin
 
 # Rule for compiling C code to object files

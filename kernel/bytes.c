@@ -59,6 +59,7 @@ unsigned long disableInterrupts() {
 void enableInterrupts(unsigned long flags) {
     __asm__("push %0\n\t"
             "popf\n\t"
+            "sti"
             : : "rm" (flags)
             : "memory", "cc");
 }

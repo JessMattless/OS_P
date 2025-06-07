@@ -4,18 +4,11 @@ OUTPUT_FORMAT(elf32-i386)
 SEARCH_DIR(drivers)
 SEARCH_DIR(kernel)
 
-INPUT(
-    kernel_entry.o
-    bytes.o
-    kernel.o
-    screen.o
-)
-
 OUTPUT(kernel.bin)
 
 SECTIONS
 {
-    . = 0x2000;
+    . = 0x4000;
     .text BLOCK(4K) : ALIGN(4K) {
         *(.text);
     }

@@ -1,8 +1,25 @@
 #include "screen.h"
+#include "bytes.h"
+#include "idt.h"
+#include "pic.h"
 
 void kernel_main(void) {
+    PIC_remap(0x20, 0x28);
+
     screen_init();
     clear_screen();
 
-    while (1) {} // Infinite loop to keep the kernel running
+    init_IDT();
+
+    // Set an interrupt mask so the PIC will only see IRQ0
+    // IRQ0 = Programmable Interrupt Timer Interrupt
+    // https://wiki.osdev.org/Interrupts
+    PIC_set_IRQ_mask(0b11111110);
+
+    // Enable interrupts for the system
+    STI();
+
+    while (1) {
+        screen_test();
+    } // Infinite loop to keep the kernel running
 }

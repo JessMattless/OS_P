@@ -25,4 +25,6 @@ void clear_screen();
 void put_pixel(int pos_x, int pos_y, unsigned char color);
 void configure_palette(long index, struct RGB rgb);
 
+void screen_test();
+
 #endif
