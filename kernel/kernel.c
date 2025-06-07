@@ -20,8 +20,15 @@ void kernel_main(void) {
     // Enable interrupts for the system
     STI();
 
+    int chars_per_row = 16;
+    for (int i = 0; i < 256; i++) {
+        int row = i / chars_per_row;
+        int col = i % chars_per_row;
+        put_char(i, col * 8, row * 8, 0xFF, 0x00);
+    }
+
     while (1) {
-        screen_test();
+        // screen_test();
 
         wait();
     } // Infinite loop to keep the kernel running

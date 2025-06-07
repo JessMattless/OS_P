@@ -2,6 +2,7 @@
 #include "bytes.h"
 #include "interrupts.h"
 #include "keyboard.h"
+#include "font.h"
 
 void screen_init() {
 
@@ -50,6 +51,18 @@ void put_pixel(int pos_x, int pos_y, unsigned char color) {
     int memory_offset = (SCREEN_WIDTH * pos_y) + pos_x;
 
     vid_mem[memory_offset] = color;
+}
+
+void put_char(unsigned char ch, int x, int y, unsigned char fg, unsigned char bg) {
+    unsigned long long glyph = font[ch];
+
+    for (int cy = 0; cy < 8; cy++) {
+        for (int cx = 0; cx < 8; cx++) {
+            int index = (cy * 8) + cx;
+            unsigned char draw_pixel = (glyph >> index) & 1;
+            put_pixel(x + cx, y + cy, draw_pixel ? fg : bg);
+        }
+    }
 }
 
 void screen_test() {
