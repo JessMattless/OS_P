@@ -4,6 +4,8 @@
 #include "keyboard.h"
 #include "font.h"
 
+struct Cursor cursor;
+
 void screen_init() {
 
     // Setup palette with 8-bit color using RRRGGGBB color
@@ -65,11 +67,22 @@ void put_char(unsigned char ch, int x, int y, unsigned char fg, unsigned char bg
     }
 }
 
-void screen_test() {
-    for (int y = 0; y < SCREEN_HEIGHT; y++) {
-        for (int x = 0; x < SCREEN_WIDTH; x++) {
-            if (test == 0) put_pixel(x, y, (y + x) + (GPT % 256));
-            else if (test == 1) put_pixel(x, y, (y + x) - (GPT % 256));
-        }
+void print_char(unsigned char ch) {
+    if (ch != 0x00) {
+        put_char(ch, SCREEN_PADDING + (cursor.col * (FONT_SIZE + CHARACTER_PADDING)), SCREEN_PADDING + (cursor.row * (FONT_SIZE + LINE_PADDING)), 0xFF, 0x00);
+        if (cursor.col >= CHARS_PER_LINE) set_cursor(0, cursor.row + 1);
+        else set_cursor(cursor.col + 1, cursor.row);
     }
+}
+
+void set_cursor(unsigned short col, unsigned short row) {
+    cursor.col = col;
+    cursor.row = row;
+}
+
+void draw_cursor() {
+    unsigned char ch;
+    if (((unsigned int)GPT / 9) % 2 == 0) ch = '_';
+    else ch = ' ';
+    put_char(ch, SCREEN_PADDING + (cursor.col * (FONT_SIZE + CHARACTER_PADDING)), SCREEN_PADDING + (cursor.row * (FONT_SIZE + LINE_PADDING)), 0xFF, 0x00);
 }

@@ -3,9 +3,12 @@
 #include "idt.h"
 #include "pic.h"
 #include "keyboard.h"
+#include "rtc.h"
+#include "interrupts.h"
 
 void kernel_main(void) {
     PIC_remap(0x20, 0x28);
+    // RTC_init();
 
     screen_init();
     clear_screen();
@@ -20,15 +23,17 @@ void kernel_main(void) {
     // Enable interrupts for the system
     STI();
 
-    int chars_per_row = 16;
-    for (int i = 0; i < 256; i++) {
-        int row = i / chars_per_row;
-        int col = i % chars_per_row;
-        put_char(i, col * 8, row * 8, 0xFF, 0x00);
-    }
+    set_cursor(0, 0);
+
+    // int chars_per_row = 16;
+    // for (int i = 0; i < 256; i++) {
+    //     int row = i / chars_per_row;
+    //     int col = i % chars_per_row;
+    //     put_char(i, col * 8, row * 8, 0xFF, 0x00);
+    // }
 
     while (1) {
-        // screen_test();
+        draw_cursor();
 
         wait();
     } // Infinite loop to keep the kernel running

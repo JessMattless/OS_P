@@ -4,6 +4,7 @@
 
 // General Program Timer
 volatile unsigned long long GPT = 0;
+volatile unsigned long long RTC = 0;
 
 // Stub function used for unregistered ISRs
 void interrupt_stub(void) {
@@ -15,6 +16,7 @@ void interrupt_handler(int interrupt_no) {
     switch (interrupt_no) {
         case 0x20: pic_timer();
         case 0x21: keyboard_interrupt();
+        case 0x28: rtc_timer();
         default: 
             PIC_send_EOI(0);
             return;
@@ -29,4 +31,8 @@ void pic_timer(void) {
 // Send any keyboard inputs to the keyboard handler
 void keyboard_interrupt(void) {
     keyboard_handler(inportb(KEYBOARD_DATA));
+}
+
+void rtc_timer(void) {
+    RTC++;
 }

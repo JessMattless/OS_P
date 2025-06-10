@@ -15,9 +15,24 @@
 #define PALETTE_WRITE 0x3C8
 #define PALETTE_DATA 0x3C9
 
+#define CHARACTER_PADDING 0x02
+#define LINE_PADDING 0x02
+#define SCREEN_PADDING 0x02
+
+#define CHARS_PER_LINE 31
+#define MAX_LINES 19
+
+#define FONT_SIZE 0x08
+
 struct RGB {
     unsigned char r, g, b;
 };
+
+struct Cursor {
+    unsigned short col, row;
+};
+
+extern struct Cursor cursor;
 
 void screen_init();
 void clear_screen();
@@ -25,8 +40,12 @@ void clear_screen();
 void put_pixel(int pos_x, int pos_y, unsigned char color);
 void configure_palette(long index, struct RGB rgb);
 
+// Puts a character at the specified position on screen
+// The char is defined using the ASCII standard
 void put_char(unsigned char ch, int x, int y, unsigned char fg, unsigned char bg);
+void print_char(unsigned char ch);
 
-void screen_test();
+void set_cursor(unsigned short col, unsigned short row);
+void draw_cursor();
 
 #endif
