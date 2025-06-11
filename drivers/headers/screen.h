@@ -19,8 +19,8 @@
 #define LINE_PADDING 0x02
 #define SCREEN_PADDING 0x02
 
-#define CHARS_PER_LINE 31
-#define MAX_LINES 19
+#define CHARS_PER_LINE 32
+#define MAX_LINES 20
 
 #define FONT_SIZE 0x08
 
@@ -28,11 +28,8 @@ struct RGB {
     unsigned char r, g, b;
 };
 
-struct Cursor {
-    unsigned short col, row;
-};
-
-extern struct Cursor cursor;
+extern unsigned char screen[CHARS_PER_LINE * MAX_LINES];
+extern unsigned char screen_index;
 
 void screen_init();
 void clear_screen();

@@ -4,7 +4,8 @@
 #include "keyboard.h"
 #include "font.h"
 
-struct Cursor cursor;
+unsigned char screen[CHARS_PER_LINE * MAX_LINES];
+unsigned char screen_index = 0;
 
 void screen_init() {
 
@@ -63,6 +64,7 @@ void put_char(unsigned char ch, int x, int y, unsigned char fg, unsigned char bg
             int index = (cy * 8) + cx;
             unsigned char draw_pixel = (glyph >> index) & 1;
             put_pixel(x + cx, y + cy, draw_pixel ? fg : bg);
+            screen[screen_index] = ch;
         }
     }
 }
@@ -72,38 +74,52 @@ void print_char(unsigned char ch) {
         case 0x00:
             break;
         case '\b':
-            put_char(' ', SCREEN_PADDING + (cursor.col * (FONT_SIZE + CHARACTER_PADDING)), SCREEN_PADDING + (cursor.row * (FONT_SIZE + LINE_PADDING)), 0xFF, 0x00);
+            put_char(' ', 
+                SCREEN_PADDING + ((screen_index % CHARS_PER_LINE) * (FONT_SIZE + CHARACTER_PADDING)), 
+                SCREEN_PADDING + ((screen_index / CHARS_PER_LINE) * (FONT_SIZE + LINE_PADDING)), 
+                0xFF, 0x00);
 
-            if (cursor.col <= 0) {
-                if (cursor.row > 0) set_cursor(CHARS_PER_LINE, cursor.row - 1);
-            }
-            else set_cursor(cursor.col - 1, cursor.row);
+                
+                
+                if (screen_index > 0) {
+                    if ((screen_index % CHARS_PER_LINE) == 0) {
+                        // If backspacing onto a previous line, check for newline char on previous line
+                        // if one exists, set cursor to it. If not, go to end of previous line.
+                        unsigned char check_index = screen_index - CHARS_PER_LINE;
+                        unsigned char target_index = screen_index - 1;
+                        for (int i = target_index; i >= check_index; i--) {
+                            if (screen[i] == '\n') target_index = i;
+                        }
+                        screen_index = target_index;
+                        break;
+                    }
+                    screen_index--;
+                }
+            break;
+        case 0x7F: // Delete Key
             break;
         case '\t':
             break;            
         case '\n':
-            // TODO: Sort out correctly backspacing newlines
-            put_char(' ', SCREEN_PADDING + (cursor.col * (FONT_SIZE + CHARACTER_PADDING)), SCREEN_PADDING + (cursor.row * (FONT_SIZE + LINE_PADDING)), 0xFF, 0x00);
+            put_char(ch, SCREEN_PADDING + ((screen_index % CHARS_PER_LINE) * (FONT_SIZE + CHARACTER_PADDING)), SCREEN_PADDING + ((screen_index / CHARS_PER_LINE) * (FONT_SIZE + LINE_PADDING)), 0xFF, 0x00);
 
-            set_cursor(0, cursor.row + 1);
+            set_cursor(0, (screen_index / CHARS_PER_LINE) + 1);
             break;
         default:
-            put_char(ch, SCREEN_PADDING + (cursor.col * (FONT_SIZE + CHARACTER_PADDING)), SCREEN_PADDING + (cursor.row * (FONT_SIZE + LINE_PADDING)), 0xFF, 0x00);
-            
-            if (cursor.col >= CHARS_PER_LINE) set_cursor(0, cursor.row + 1);
-            else set_cursor(cursor.col + 1, cursor.row);
+            put_char(ch, SCREEN_PADDING + ((screen_index % CHARS_PER_LINE) * (FONT_SIZE + CHARACTER_PADDING)), SCREEN_PADDING + ((screen_index / CHARS_PER_LINE) * (FONT_SIZE + LINE_PADDING)), 0xFF, 0x00);
+
+            screen_index++;
             break;
     }
 }
 
 void set_cursor(unsigned short col, unsigned short row) {
-    cursor.col = col;
-    cursor.row = row;
+    screen_index = (row * CHARS_PER_LINE) + col;
 }
 
 void draw_cursor() {
     unsigned char ch;
     if (((unsigned int)GPT / 9) % 2 == 0) ch = '_';
     else ch = ' ';
-    put_char(ch, SCREEN_PADDING + (cursor.col * (FONT_SIZE + CHARACTER_PADDING)), SCREEN_PADDING + (cursor.row * (FONT_SIZE + LINE_PADDING)), 0xFF, 0x00);
+    put_char(ch, SCREEN_PADDING + ((screen_index % CHARS_PER_LINE) * (FONT_SIZE + CHARACTER_PADDING)), SCREEN_PADDING + ((screen_index / CHARS_PER_LINE) * (FONT_SIZE + LINE_PADDING)), 0xFF, 0x00);
 }
