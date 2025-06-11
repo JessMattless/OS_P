@@ -1,5 +1,8 @@
 #include "font.h"
 
+// TODO: Fix 'C' in font
+// TODO: Add '£', '¬', '¦' and '€'
+
 // Font is mindset
 // https://int10h.org/oldschool-pc-fonts/fontlist/font?mindset#-
 unsigned long long font[256] = {
@@ -70,7 +73,7 @@ unsigned long long font[256] = {
     0x001E037B7B7B633E,
     0x0033333F33331E0C,
     0x003F66663E66663F,
-    0x003D66030303663C,
+    0x003C66030303663C,
     0x001F36666666361F,
     0x007F46161E16467F,
     0x000F06161E16467F,
@@ -127,10 +130,10 @@ unsigned long long font[256] = {
     0x1F303E3333330000,
     0x003F260C193F0000,
     0x00380C0C070C0C38,
-    0x0018181800181818,
+    0x0018181818181818,
     0x00070C0C380C0C07,
     0x0000000000003B6E,
-    0x007F6363361C0800,
+    0x0018181800181818,
     0x38203C660303663C,
     0x006E333333330012,
     0x003C067E663D0204,
@@ -158,7 +161,7 @@ unsigned long long font[256] = {
     0x1F303E3333330012,
     0x001C366363361C22,
     0x003E636363630022,
-    0x107C561313567C10,
+    0x003C66031F03663C,
     0x003F66060F26361C,
     0x08087F007F142241,
     0x0061217127290907,

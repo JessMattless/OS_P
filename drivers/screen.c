@@ -82,7 +82,7 @@ void print_char(unsigned char ch) {
         case '\t':
             break;            
         case '\n':
-            // Sort out correctly backspacing newlines
+            // TODO: Sort out correctly backspacing newlines
             put_char(' ', SCREEN_PADDING + (cursor.col * (FONT_SIZE + CHARACTER_PADDING)), SCREEN_PADDING + (cursor.row * (FONT_SIZE + LINE_PADDING)), 0xFF, 0x00);
 
             set_cursor(0, cursor.row + 1);
