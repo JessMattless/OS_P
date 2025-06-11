@@ -37,7 +37,7 @@ KERNEL_OFFSET equ 0x2000 ; This is the memory offset used to load the kernel
 %include "boot/print/print_string_pm.asm" 
 %include "boot/switch_to_pm.asm"
 %include "boot/gdt.asm"
-;%include "hex/print_hex.asm"
+;%include "boot/print/print_hex.asm"
 
 [bits 16]
 load_kernel:

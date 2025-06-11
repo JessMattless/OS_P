@@ -6,7 +6,6 @@
 // https://wiki.osdev.org/PS/2_Keyboard
 
 // Queue for keyboard commands
-// TODO: Make a better way of making this queue
 struct keyboard_command keyboard_queue[256];
 unsigned char keyboard_queue_pos = 0;
 
@@ -172,7 +171,6 @@ void handle_keycode(unsigned short keycode) {
         kb.keys[layout_key] = 1;
 
 
-        // TODO: Sort out key flags
         // Set key flags
         if (layout_key == KEY_LSHIFT || layout_key == KEY_RSHIFT) kb.key_flags |= 0b00001000;
         else if (layout_key == KEY_LCTRL || layout_key == KEY_RCTRL) kb.key_flags |= 0b00000100;
