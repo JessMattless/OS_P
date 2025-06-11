@@ -119,9 +119,9 @@ void keyboard_handler(unsigned char data) {
                         break;
                 }
                 break;
-                set_keyboard_key_transition_states();
-        }
-
+            }
+            
+        set_keyboard_key_transition_states();
         send_next_keyboard_command();
     }
 }
@@ -174,24 +174,22 @@ void handle_keycode(unsigned short keycode) {
 
         // TODO: Sort out key flags
         // Set key flags
-        // if (layout_key == KEY_LSHIFT || layout_key == KEY_RSHIFT) kb.key_flags |= 0b00001000;
-        // else if (layout_key == KEY_LCTRL || layout_key == KEY_RCTRL) kb.key_flags |= 0b00000100;
-        // else if (layout_key == KEY_LALT || layout_key == KEY_RALT) kb.key_flags |= 0b00000010;
-        // else if (layout_key == KEY_LGUI || layout_key == KEY_RGUI) kb.key_flags |= 0b00000001;
+        if (layout_key == KEY_LSHIFT || layout_key == KEY_RSHIFT) kb.key_flags |= 0b00001000;
+        else if (layout_key == KEY_LCTRL || layout_key == KEY_RCTRL) kb.key_flags |= 0b00000100;
+        else if (layout_key == KEY_LALT || layout_key == KEY_RALT) kb.key_flags |= 0b00000010;
+        else if (layout_key == KEY_LGUI || layout_key == KEY_RGUI) kb.key_flags |= 0b00000001;
 
-        // TODO: Sort out held checking, it currently doesn't work.
-        // if (!get_keyboard_key_held(layout_key)) print_char(get_ascii(layout_key));
-        print_char(get_ascii(layout_key));
+        if (!get_keyboard_key_held(layout_key)) print_char(get_ascii(layout_key));
     }
     // Else it's a breaking code
     else {
         kb.keys[layout_key] = 0;
 
         // Break key flags
-        // if (layout_key == KEY_LSHIFT || layout_key == KEY_RSHIFT) kb.key_flags &= 0b11110111;
-        // else if (layout_key == KEY_LCTRL || layout_key == KEY_RCTRL) kb.key_flags &= 0b11111011;
-        // else if (layout_key == KEY_LALT || layout_key == KEY_RALT) kb.key_flags &= 0b11111101;
-        // else if (layout_key == KEY_LGUI || layout_key == KEY_RGUI) kb.key_flags &= 0b11111110;
+        if (layout_key == KEY_LSHIFT || layout_key == KEY_RSHIFT) kb.key_flags &= 0b11110111;
+        else if (layout_key == KEY_LCTRL || layout_key == KEY_RCTRL) kb.key_flags &= 0b11111011;
+        else if (layout_key == KEY_LALT || layout_key == KEY_RALT) kb.key_flags &= 0b11111101;
+        else if (layout_key == KEY_LGUI || layout_key == KEY_RGUI) kb.key_flags &= 0b11111110;
     }
 }
 
@@ -207,61 +205,120 @@ unsigned char get_keyboard_key_held(enum keyboard_layout key) {
 }
 
 unsigned char get_ascii(enum keyboard_layout key) {
-    switch (key) {
-        // case KEY_A: 
-        //     // if (kb.key_flags & KEYBOARD_SHIFT_FLAG)
-        //     return 'a';
-        // case KEY_B: return 'b';
-        // case KEY_C: return 'c';
-        // case KEY_D: return 'd';
-        // case KEY_E: return 'e';
-        // case KEY_F: return 'f';
-        // case KEY_G: return 'g';
-        // case KEY_H: return 'h';
-        // case KEY_I: return 'i';
-        // case KEY_J: return 'j';
-        // case KEY_K: return 'k';
-        // case KEY_L: return 'l';
-        // case KEY_M: return 'm';
-        // case KEY_N: return 'n';
-        // case KEY_O: return 'o';
-        // case KEY_P: return 'p';
-        // case KEY_Q: return 'q';
-        // case KEY_R: return 'r';
-        // case KEY_S: return 's';
-        // case KEY_T: return 't';
-        // case KEY_U: return 'u';
-        // case KEY_V: return 'v';
-        // case KEY_W: return 'w';
-        // case KEY_X: return 'x';
-        // case KEY_Y: return 'y';
-        // case KEY_Z: return 'z';
-        // case KEY_1: return '1';
-        // case KEY_2: return '2';
-        // case KEY_3: return '3';
-        // case KEY_4: return '4';
-        // case KEY_5: return '5';
-        // case KEY_6: return '6';
-        // case KEY_7: return '7';
-        // case KEY_8: return '8';
-        // case KEY_9: return '9';
-        // case KEY_0: return '0';
-        // case KEY_SPACE: return ' ';
-        // case KEY_ENTER: return '\n';
-        // case KEY_TAB: return '\t';
-        // case KEY_MINUS: return '-';
-        // case KEY_EQUALS: return '=';
-        // case KEY_BACKSPACE: return '\b';
-        // case KEY_SEMICOLON: return ';';
-        // case KEY_APOSTROPHE: return '\'';
-        // case KEY_GRAVE: return '`';
-        // case KEY_COMMA: return ',';
-        // case KEY_DOT: return '.';
-        // case KEY_SLASH: return '/';
-        // case KEY_BACKSLASH: return '\\';
-        // case KEY_OPEN_BRACKET: return '[';
-        // case KEY_CLOSE_BRACKET: return ']';
-
-        default: return 'a';
+    if ((kb.key_flags & KEYBOARD_SHIFT_FLAG) == 0x08) {
+        switch (key) {
+            case KEY_A: return 'A';
+            case KEY_B: return 'B';
+            case KEY_C: return 'C';
+            case KEY_D: return 'D';
+            case KEY_E: return 'E';
+            case KEY_F: return 'F';
+            case KEY_G: return 'G';
+            case KEY_H: return 'H';
+            case KEY_I: return 'I';
+            case KEY_J: return 'J';
+            case KEY_K: return 'K';
+            case KEY_L: return 'L';
+            case KEY_M: return 'M';
+            case KEY_N: return 'N';
+            case KEY_O: return 'O';
+            case KEY_P: return 'P';
+            case KEY_Q: return 'Q';
+            case KEY_R: return 'R';
+            case KEY_S: return 'S';
+            case KEY_T: return 'T';
+            case KEY_U: return 'U';
+            case KEY_V: return 'V';
+            case KEY_W: return 'W';
+            case KEY_X: return 'X';
+            case KEY_Y: return 'Y';
+            case KEY_Z: return 'Z';
+            case KEY_1: return '!';
+            case KEY_2: return '"';
+            case KEY_3: return 0x00;
+            case KEY_4: return '$';
+            case KEY_5: return '%';
+            case KEY_6: return '^';
+            case KEY_7: return '&';
+            case KEY_8: return '*';
+            case KEY_9: return '(';
+            case KEY_0: return ')';
+            case KEY_SPACE: return ' ';
+            case KEY_ENTER: return '\n';
+            case KEY_TAB: return '\t';
+            case KEY_MINUS: return '_';
+            case KEY_EQUALS: return '+';
+            case KEY_BACKSPACE: return '\b';
+            case KEY_SEMICOLON: return ':';
+            case KEY_APOSTROPHE: return '@';
+            case KEY_HASHTAG: return '~';
+            case KEY_GRAVE: return 0x00;
+            case KEY_COMMA: return '<';
+            case KEY_DOT: return '>';
+            case KEY_SLASH: return '?';
+            case KEY_BACKSLASH: return '|';
+            case KEY_OPEN_BRACKET: return '{';
+            case KEY_CLOSE_BRACKET: return '}';
+    
+            default: return 0;
+        }
+    }
+    else {
+        switch (key) {
+            case KEY_A: return 'a';
+            case KEY_B: return 'b';
+            case KEY_C: return 'c';
+            case KEY_D: return 'd';
+            case KEY_E: return 'e';
+            case KEY_F: return 'f';
+            case KEY_G: return 'g';
+            case KEY_H: return 'h';
+            case KEY_I: return 'i';
+            case KEY_J: return 'j';
+            case KEY_K: return 'k';
+            case KEY_L: return 'l';
+            case KEY_M: return 'm';
+            case KEY_N: return 'n';
+            case KEY_O: return 'o';
+            case KEY_P: return 'p';
+            case KEY_Q: return 'q';
+            case KEY_R: return 'r';
+            case KEY_S: return 's';
+            case KEY_T: return 't';
+            case KEY_U: return 'u';
+            case KEY_V: return 'v';
+            case KEY_W: return 'w';
+            case KEY_X: return 'x';
+            case KEY_Y: return 'y';
+            case KEY_Z: return 'z';
+            case KEY_1: return '1';
+            case KEY_2: return '2';
+            case KEY_3: return '3';
+            case KEY_4: return '4';
+            case KEY_5: return '5';
+            case KEY_6: return '6';
+            case KEY_7: return '7';
+            case KEY_8: return '8';
+            case KEY_9: return '9';
+            case KEY_0: return '0';
+            case KEY_SPACE: return ' ';
+            case KEY_ENTER: return '\n';
+            case KEY_TAB: return '\t';
+            case KEY_MINUS: return '-';
+            case KEY_EQUALS: return '=';
+            case KEY_BACKSPACE: return '\b';
+            case KEY_SEMICOLON: return ';';
+            case KEY_APOSTROPHE: return '\'';
+            case KEY_HASHTAG: return '#';
+            case KEY_GRAVE: return '`';
+            case KEY_COMMA: return ',';
+            case KEY_DOT: return '.';
+            case KEY_SLASH: return '/';
+            case KEY_BACKSLASH: return '\\';
+            case KEY_OPEN_BRACKET: return '[';
+            case KEY_CLOSE_BRACKET: return ']';
+    
+            default: return 0;
+        }
     }
 }

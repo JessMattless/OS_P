@@ -1,10 +1,10 @@
 disk_load:
-    mov ah, 0x02 ; BIOS read sector function
+    mov ah, 0x02   ; BIOS read sector function
 
     mov ch, 0x00   ; Select cylinder 0 from the drive
     mov dh, 0x00   ; Select the track on the second side of the disk, since it is base 0
     mov cl, 0x02   ; Start at sector 2 (BIOS sector 2, which is the first sector after the boot sector)
-    mov al, 127             ; so we load the first n sectors (exc the boot sector)
+    mov al, 63              ; so we load the first n sectors (exc the boot sector)
     mov dl, [BOOT_DRIVE]    ; Read drive 0x80, in this case the hard drive
 
     ; Set the address that we want the BIOS to read the sectors to

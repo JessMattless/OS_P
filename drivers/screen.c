@@ -68,10 +68,31 @@ void put_char(unsigned char ch, int x, int y, unsigned char fg, unsigned char bg
 }
 
 void print_char(unsigned char ch) {
-    if (ch != 0x00) {
-        put_char(ch, SCREEN_PADDING + (cursor.col * (FONT_SIZE + CHARACTER_PADDING)), SCREEN_PADDING + (cursor.row * (FONT_SIZE + LINE_PADDING)), 0xFF, 0x00);
-        if (cursor.col >= CHARS_PER_LINE) set_cursor(0, cursor.row + 1);
-        else set_cursor(cursor.col + 1, cursor.row);
+    switch (ch) {
+        case 0x00:
+            break;
+        case '\b':
+            put_char(' ', SCREEN_PADDING + (cursor.col * (FONT_SIZE + CHARACTER_PADDING)), SCREEN_PADDING + (cursor.row * (FONT_SIZE + LINE_PADDING)), 0xFF, 0x00);
+
+            if (cursor.col <= 0) {
+                if (cursor.row > 0) set_cursor(CHARS_PER_LINE, cursor.row - 1);
+            }
+            else set_cursor(cursor.col - 1, cursor.row);
+            break;
+        case '\t':
+            break;            
+        case '\n':
+            // Sort out correctly backspacing newlines
+            put_char(' ', SCREEN_PADDING + (cursor.col * (FONT_SIZE + CHARACTER_PADDING)), SCREEN_PADDING + (cursor.row * (FONT_SIZE + LINE_PADDING)), 0xFF, 0x00);
+
+            set_cursor(0, cursor.row + 1);
+            break;
+        default:
+            put_char(ch, SCREEN_PADDING + (cursor.col * (FONT_SIZE + CHARACTER_PADDING)), SCREEN_PADDING + (cursor.row * (FONT_SIZE + LINE_PADDING)), 0xFF, 0x00);
+            
+            if (cursor.col >= CHARS_PER_LINE) set_cursor(0, cursor.row + 1);
+            else set_cursor(cursor.col + 1, cursor.row);
+            break;
     }
 }
 

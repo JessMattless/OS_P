@@ -9,7 +9,7 @@
 ; ah refers to only the first byte, and al refers to only the second
 
 [org 0x7c00]
-KERNEL_OFFSET equ 0x4000 ; This is the memory offset used to load the kernel
+KERNEL_OFFSET equ 0x2000 ; This is the memory offset used to load the kernel
 
     mov [BOOT_DRIVE], dl ; BIOS stores the boot drive in DL, so
                          ; it's stored there for later
