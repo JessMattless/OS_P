@@ -9,17 +9,17 @@ extern void _isr_stub();
 
 ISR_EXTERN(32);
 ISR_EXTERN(33);
+ISR_EXTERN(40);
 
 /* End of ISR Externs*/
 
-// Create entries pointing to defined functions to fill the IDT
 void create_IDT_entry(unsigned int interrupt_no, void (*handler)()) {
     unsigned long handler_address = (unsigned long)handler;
 
     idt[interrupt_no].offset_low = handler_address & 0xFFFF;
     idt[interrupt_no].segment_selector = 0x08; //Code segment
     idt[interrupt_no].zero = 0;
-    idt[interrupt_no].type_attributes = 0b10001110; // 
+    idt[interrupt_no].type_attributes = 0b10001110;
     idt[interrupt_no].offset_high = (handler_address >> 16) & 0xFFFF;
 }
 
@@ -31,6 +31,7 @@ void init_IDT() {
 
     create_IDT_entry(0x20, isr32);
     create_IDT_entry(0x21, isr33);
+    create_IDT_entry(0x28, isr40);
 
     /* End of ISR Definitions */
 

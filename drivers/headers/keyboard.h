@@ -13,7 +13,10 @@
 #define KEYBOARD_ALT_FLAG 0b00000010
 #define KEYBOARD_GUI_FLAG 0b00000001
 
+// https://wiki.osdev.org/PS/2_Keyboard
+
 // Note: This is the ISO105 Layout of a UK keyboard.
+// https://kbdlayout.info/kbduk/scancodes
 enum keyboard_layout {
     KEY_NULL,
     KEY_ESCAPE,
@@ -156,7 +159,6 @@ extern struct keyboard kb;
 
 extern const unsigned short scancode_map[0x201];
 
-// https://wiki.osdev.org/PS/2_Keyboard
 
 void keyboard_init();
 
@@ -188,6 +190,8 @@ void set_keyboard_key_transition_states();
 // 1 if held
 unsigned char get_keyboard_key_held(enum keyboard_layout key);
 
+// Returns the correct ascii code for the given key
+// code given depends on keyboard flags (E.g. Shift)
 unsigned char get_ascii(enum keyboard_layout key);
 
 #endif

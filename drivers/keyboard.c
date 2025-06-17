@@ -21,13 +21,12 @@ enum {
 char keyboard_timeout = 0;
 char keyboard_retries = 0;
 
-// These variable names are long, might change them later
 unsigned char keyboard_expected_response_count = 0;
 unsigned char keyboard_current_response_count = 0;
 unsigned char keyboard_response_bytes[KEYBOARD_MAX_RESPONSES];
 
 void keyboard_init() {
-    // Fill out the command table
+    // Fill out the command table with stub commands
     for (unsigned char i = 0; i < 256; i++) {
         struct keyboard_command stub_command = {0x00, 0x00};
         keyboard_queue[i] = stub_command;
@@ -43,14 +42,16 @@ void keyboard_init() {
 
 void keyboard_handler(unsigned char data) {
     struct keyboard_command current_command = keyboard_queue[keyboard_queue_pos];
+    
     // If sent 0xFA (acknowledged last command), move to the next command in the queue
     // Unless the keyboard is currently waiting for a specific reply
     // Special case for command 0xFE as it doesn't return 0xFA on success
     // If a command fails, retry a maximum of 3 times before giving up
     if ((data == 0xFA && keyboard_state == KB_DEFAULT) || (current_command.command == 0xFE && data != 0xFE) || keyboard_retries >= KEYBOARD_MAX_RETRIES) {
         keyboard_retries = 0;
-
         keyboard_timeout = GPT + 10;
+
+        // If the command expects multiple return bytes, we specify that here
         switch (current_command.command) {
             // 0xF2, Identify keyboard, should output 0-2 bytes
             case 0xF2:
@@ -62,14 +63,13 @@ void keyboard_handler(unsigned char data) {
                 break;
         }
             
-            // If current command acknowledged, move onto next command
-            keyboard_queue[keyboard_queue_pos].command = 0x00;
-            keyboard_queue[keyboard_queue_pos].data = 0x00;
-            
-            // If not at the start of the queue, move to the next command
-            if (keyboard_queue_pos != 0) keyboard_queue_pos--;
-            
-            send_next_keyboard_command();
+        // If current command has been acknowledged, set is as completed
+        keyboard_queue[keyboard_queue_pos].command = 0x00;
+        keyboard_queue[keyboard_queue_pos].data = 0x00;
+        
+        // If not at the start of the queue, move to the next command
+        if (keyboard_queue_pos != 0) keyboard_queue_pos--;
+        send_next_keyboard_command();
     }
     // If 0xFE, resend the last command
     else if (data == 0xFE) {
@@ -79,26 +79,34 @@ void keyboard_handler(unsigned char data) {
     // Else we have received a scancode
     else {
         switch (keyboard_state) {
+            // If we are waiting for 1 or more bytes of a multi-byte scancode
             case KB_WAITINGCMD: case KB_WAITINGSCAN:
-                // If we are waiting for 1 or more bytes of a multi-byte scancode
+                // Add the newest response to the list
                 keyboard_response_bytes[keyboard_current_response_count++] = data;
+                // If the keyboard has received all expected bytes, or has timed out
                 if (keyboard_current_response_count == keyboard_expected_response_count || GPT > keyboard_timeout) {
-                    // If the scancode is complete, send it off to be handled by the driver, and start the next command
-                    keyboard_state = KB_DEFAULT;
-                    keyboard_current_response_count = 0;
-
+                    // If the scancode is for a key-press, translate it and send it to be handled
                     if (keyboard_state == KB_WAITINGSCAN) handle_keycode(translate_scancode(keyboard_response_bytes));
 
+                    // Return the keyboard to default state, and reset the expected bytes, before calling the next command
+                    keyboard_state = KB_DEFAULT;
+                    keyboard_current_response_count = 0;
                     send_next_keyboard_command();
                 }
                 break;
+            // If the keyboard is waiting for any scancode
             default: case KB_DEFAULT:
+                keyboard_timeout = GPT + 10;
+
+                // Check if the scancode being sent is the first part of a multi-byte scancode
                 switch (data) {
                     // Extended Byte
                     case 0xE0:
                         // Up to 4 responses, normally 2 except for print screen
                         keyboard_expected_response_count = 4;
                         keyboard_state = KB_WAITINGSCAN;
+                        reset_keyboard_response_bytes();
+
                         // Explicitly set the first response byte to 0xE0
                         keyboard_response_bytes[0] = 0xE0;
                         keyboard_current_response_count = 1;
@@ -108,6 +116,8 @@ void keyboard_handler(unsigned char data) {
                         // Up to 6 responses, looking for "pause" button
                         keyboard_expected_response_count = 6;
                         keyboard_state = KB_WAITINGSCAN;
+                        reset_keyboard_response_bytes();
+
                         // Explicitly set the first response byte to 0xE1
                         keyboard_response_bytes[0] = 0xE1;
                         keyboard_current_response_count = 1;
@@ -119,7 +129,7 @@ void keyboard_handler(unsigned char data) {
                 }
                 break;
             }
-            
+        
         set_keyboard_key_transition_states();
         send_next_keyboard_command();
     }
@@ -134,6 +144,7 @@ void queue_keyboard_command(struct keyboard_command command) {
 }
 
 void send_keyboard_command(struct keyboard_command command) {
+    // Any data bytes must be sent after command byte
     outportb(KEYBOARD_COMMAND, command.command);
     wait();
     // Only send data bytes if the command is expecting them
@@ -166,10 +177,75 @@ void handle_keycode(unsigned short keycode) {
     enum keyboard_layout layout_key = scancode_map[keycode];
     if (layout_key == KEY_NULL) return; // Not mapped
 
+    // TODO: Text mode only
+    // Check for key press, discard if released
+    if (keycode < 0x180) {
+        // Directional key input for text mode
+        switch (layout_key) {
+            case KEY_LEFT:
+                if (screen_index > 0) {
+                    // If pressing left would put the cursor on the previous line
+                    if ((screen_index % CHARS_PER_LINE) == 0) {
+                        int prev_line_end = screen_index - 1;
+                        int prev_line_start = prev_line_end - (prev_line_end % CHARS_PER_LINE);
+
+                        // If the last char of the previous line is not a space, just move back one
+                        if (screen[prev_line_end] != ' ') {
+                            screen_index--;
+                        }
+                        else {
+                            // Scan left for the closest non-space or newline
+                            // If none are found, go to the start of the previous line
+                            int target = prev_line_start;
+                            for (int j = prev_line_end; j >= prev_line_start; j--) {
+                                if (screen[j] == '\n') {
+                                    target = j;
+                                    break;
+                                }
+                                if (screen[j] != ' ') {
+                                    target = j + 1;
+                                    break;
+                                }
+                            }
+                            screen_index = target;
+                        }
+                    } else screen_index--;
+                    draw_screen();
+                    draw_cursor();
+                }
+                return;
+            case KEY_RIGHT:
+                // TODO: Get this working with reducing screen_length when backspacing
+                if (screen_index < (MAX_LINES * CHARS_PER_LINE) - 1 && screen_index < screen_length) {
+                    if (screen[screen_index] == '\n') screen_index += CHARS_PER_LINE - (screen_index % CHARS_PER_LINE);
+                    else screen_index++;
+                    draw_screen();
+                    draw_cursor();
+                }
+                return;
+            case KEY_UP:
+                // TODO: Make this work with newlines properly
+                if (screen_index > CHARS_PER_LINE - 1) {
+                    screen_index -= CHARS_PER_LINE;
+                    draw_screen();
+                    draw_cursor();
+                }
+                return;
+            case KEY_DOWN:
+                // TODO: Make this work with newlines properly
+                if (screen_index < (MAX_LINES * CHARS_PER_LINE) - CHARS_PER_LINE - 1 && screen_index + CHARS_PER_LINE < screen_length) {
+                    screen_index += CHARS_PER_LINE;
+                    draw_screen();
+                    draw_cursor();
+                }
+                return;
+            default: break;
+        }
+    }
+
     // If keycode is a mapping code
     if (keycode < 0x80 || (keycode >= 0x100 && (keycode & 0x7F) < 0x80)) {
         kb.keys[layout_key] = 1;
-
 
         // Set key flags
         if (layout_key == KEY_LSHIFT || layout_key == KEY_RSHIFT) kb.key_flags |= 0b00001000;
@@ -177,6 +253,7 @@ void handle_keycode(unsigned short keycode) {
         else if (layout_key == KEY_LALT || layout_key == KEY_RALT) kb.key_flags |= 0b00000010;
         else if (layout_key == KEY_LGUI || layout_key == KEY_RGUI) kb.key_flags |= 0b00000001;
 
+        // TODO: Text mode only
         if (!get_keyboard_key_held(layout_key)) print_char(get_ascii(layout_key));
     }
     // Else it's a breaking code

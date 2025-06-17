@@ -7,16 +7,11 @@
 
 // https://wiki.osdev.org/8259_PIC
 
-// End of Interrupt, used to tell the PIC that the
-// calling Interrupt ReQuest (IRQ) has finished
 void PIC_send_EOI(unsigned char irq) {
     if (irq >= 8) outportb(PIC2_COMMAND, PIC_EOI);
     outportb(PIC1_COMMAND, PIC_EOI);
 }
 
-// Some of the default IRQs conflict with CPU exceptions by default
-// we remap the PIC to ensure this doesn't happen
-// wait() is used here as the PIC might need time to run each command
 void PIC_remap(int offset1, int offset2) {
     // Begin initializing the PIC
     outportb(PIC1_COMMAND, ICW1_INIT | ICW1_ICW4);
@@ -61,7 +56,6 @@ void PIC_enable(void) {
     outportb(PIC2_DATA, 0x00);
 }
 
-// Mask specific IRQs, so the PIC will ignore them
 void PIC_set_IRQ_mask(unsigned char IRQline) {
     unsigned short port;
     unsigned char value;
@@ -76,7 +70,6 @@ void PIC_set_IRQ_mask(unsigned char IRQline) {
     outportb(port, value);
 }
 
-// Clear the mask on specific IRQs, so the PIC will stop ignoring them
 void PIC_clear_IRQ_mask(unsigned char IRQline) {
     unsigned short port;
     unsigned char value;
@@ -91,9 +84,6 @@ void PIC_clear_IRQ_mask(unsigned char IRQline) {
     outportb(port, value);
 }
 
-// Get the register values from both PICs
-// PIC1 is IRQs 0-7, PIC2 is IRQ2 8-15
-// PIC2 IRQ 2 is the chain to PIC1
 unsigned short _pic_get_irq_register(int ocw3) {
     outportb(PIC1_COMMAND, ocw3);
     outportb(PIC2_COMMAND, ocw3);
@@ -101,12 +91,10 @@ unsigned short _pic_get_irq_register(int ocw3) {
     return (inportb(PIC2_COMMAND) << 8) | inportb(PIC1_COMMAND);
 }
 
-// This function will show bit 2 0b0000000000000100 when any of PIC2's bits are set
 unsigned short PIC_get_IRR(void) {
     return _pic_get_irq_register(PIC_READ_IRR);
 }
 
-// This function will show bit 2 0b0000000000000100 when any of PIC2's bits are set
 unsigned short PIC_get_ISR(void) {
     return _pic_get_irq_register(PIC_READ_ISR);
 }

@@ -9,14 +9,14 @@
 ; ah refers to only the first byte, and al refers to only the second
 
 [org 0x7c00]
-KERNEL_OFFSET equ 0x2000 ; This is the memory offset used to load the kernel
+KERNEL_OFFSET equ 0x2000    ; This is the memory offset used to load the kernel
 
-    mov [BOOT_DRIVE], dl ; BIOS stores the boot drive in DL, so
-                         ; it's stored there for later
+    mov [BOOT_DRIVE], dl    ; BIOS stores the boot drive in DL, so
+                            ; it's stored there for later
 
-    mov bp, 0x9000  ; Set the stack out of the way
-    mov sp, bp      ; We cannot set sp directly so we use bp
-                    ; to set it indirectly
+    mov bp, 0x9000          ; Set the stack out of the way
+    mov sp, bp              ; We cannot set sp directly so we use bp
+                            ; to set it indirectly
 
     mov bx, BOOT_MSG_16
     call print_string
@@ -27,9 +27,9 @@ KERNEL_OFFSET equ 0x2000 ; This is the memory offset used to load the kernel
 
     call load_kernel
 
-    call switch_to_pm ; We never return from here
+    call switch_to_pm   ; We never return from here
 
-    jmp $ ; This is used to jump to the current address in memory (Which in this case loops forever)
+    jmp $               ; This is used to jump to the current address in memory (Which in this case loops forever)
 
 ; Include the file "x", the line gets replaced with the contents of the file.
 %include "boot/print/print_string.asm" 
@@ -50,13 +50,13 @@ load_kernel:
 
 load_graphics_mode:
     push ax
-    mov ah, 0x00 ; Sets interrupt to set video mode
-    mov al, 0x13 ; Graphics mode: VGA
-                 ; 320 x 200 resolution
-                 ; 16 colors
-                 ; A0000 Video address start
+    mov ah, 0x00    ; Sets interrupt to set video mode
+    mov al, 0x13    ; Graphics mode: VGA
+                    ; 320 x 200 resolution
+                    ; 16 colors
+                    ; A0000 Video address start
 
-    int 0x10 ; BIOS interrupt
+    int 0x10        ; BIOS interrupt
 
     pop ax
     ret

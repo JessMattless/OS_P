@@ -1,14 +1,13 @@
 #ifndef PIC_H
 #define PIC_H
 
+// PIC Access Registers
 #define PIC1 0x20
 #define PIC2 0xA0
 #define PIC1_COMMAND PIC1
 #define PIC1_DATA (PIC1 + 1)
 #define PIC2_COMMAND PIC2
 #define PIC2_DATA (PIC2 + 1)
-
-// Interrupt Status Registers
 
 // Interrupt Request Register
 // OCW3 IRQ ready next command
@@ -17,7 +16,6 @@
 // In-Service Register
 // OCW3 IRQ service next command
 #define PIC_READ_ISR 0x0B
-
 
 // End of Interrupt
 #define PIC_EOI 0x20
@@ -34,18 +32,31 @@
 #define ICW4_BUF_MASTER	0x0C	// Buffered mode/master
 #define ICW4_SFNM	0x10		// Special fully nested (not)
 
+// End of Interrupt, used to tell the PIC that the
+// calling Interrupt ReQuest (IRQ) has finished
 void PIC_send_EOI(unsigned char irq);
 
+// Some of the default IRQs conflict with CPU exceptions by default
+// we remap the PIC to ensure this doesn't happen
+// wait() is used here as the PIC might need time to run each command
 void PIC_remap(int offset1, int offset2);
 
 void PIC_disable(void);
 void PIC_enable(void);
 
+// Mask specific IRQs, so the PIC will ignore them
 void PIC_set_IRQ_mask(unsigned char IRQ);
+// Clear the mask on specific IRQs, so the PIC will stop ignoring them
 void PIC_clear_IRQ_mask(unsigned char IRQ);
 
+// Get the register values from both PICs
+// PIC1 is IRQs 0-7, PIC2 is IRQ2 8-15
+// PIC2 IRQ 2 is the chain to PIC1
 unsigned short _pic_get_irq_register(int ocw3);
+
+// This function will show bit 2 0b0000000000000100 when any of PIC2's bits are set
 unsigned short PIC_get_IRR(void);
+// This function will show bit 2 0b0000000000000100 when any of PIC2's bits are set
 unsigned short PIC_get_ISR(void);
 
 #endif

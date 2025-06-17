@@ -1,9 +1,9 @@
 [bits 16]
 ; Used to switch to 32-bit protected mode
 switch_to_pm:
-    cli     ; Interrupts must be switched off during the transition to
-            ; protected mode, until we have set up the interrupt vector
-            ; correctly, otherwise interrupts would crash the CPU
+    cli                     ; Interrupts must be switched off during the transition to
+                            ; protected mode, until we have set up the interrupt vector
+                            ; correctly, otherwise interrupts would crash the CPU
     
     lgdt [gdt_descriptor]   ; Load the Global Descriptor Table.
                             ; this defines the protected mode segments

@@ -5,10 +5,10 @@
 
 // https://wiki.osdev.org/RTC
 
-// This must be done while interrupts are disabled
 void RTC_init() {
     nmi_disable();
 
+    // Mask specific ports in the RTC to enable it
     unsigned char current_mask = inportb(RTC_INDEX);
     outportb(RTC_INDEX, current_mask | RTC_REGISTER_B);
 
@@ -19,14 +19,12 @@ void RTC_init() {
     nmi_enable();
 }
 
-// Non-Maskable Interrupt
 void nmi_enable() {
     unsigned char current_mask = inportb(RTC_INDEX);
     outportb(RTC_INDEX, current_mask | RTC_NMI_ENABLE);
     current_mask = inportb(RTC_DATA);
 }
 
-// Non-Maskable Interrupt
 void nmi_disable() {
     unsigned char current_mask = inportb(RTC_INDEX);
     outportb(RTC_INDEX, current_mask | RTC_NMI_DISABLE);

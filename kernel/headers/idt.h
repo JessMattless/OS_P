@@ -5,6 +5,7 @@
 #define IDT_SIZE     0x03FF
 #define IDT_SEGMENT_SIZE 0x40
 
+// Shorthand for referring to an arbitrary amount of isr functions
 #define ISR_EXTERN(n) extern void isr##n(void);
 
 // https://wiki.osdev.org/Interrupt_Descriptor_Table
@@ -53,6 +54,7 @@ struct IDT_Segment {
 
 extern struct IDT_Segment idt[256];
 
+// Create entries pointing to defined functions to fill the IDT
 void create_IDT_entry(unsigned int interrupt_no, void (*handler)());
 
 // Initialise the IDT with defined functions and stubs

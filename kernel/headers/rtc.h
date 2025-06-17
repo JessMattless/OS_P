@@ -1,6 +1,7 @@
 #ifndef RTC_H
 #define RTC_H
 
+// RTC Access Registers
 #define RTC_INDEX 0x70
 #define RTC_DATA 0x71
 
@@ -12,9 +13,13 @@
 
 #define RTC_ENABLE_SIGNAL 0x40
 
+// Initialise the RTC
+// This must be done while interrupts are disabled
 void RTC_init();
 
+// Enable The Non-Maskable Interrupt
 void nmi_enable();
+// Disable The Non-Maskable Interrupt
 void nmi_disable();
 
 #endif

@@ -6,6 +6,7 @@
 
 const unsigned short scancode_map[0x201] = {
     // Single-byte scancodes (0x00–0xFF)
+    // Press
     [0x01] = KEY_ESCAPE,
     [0x02] = KEY_1,
     [0x03] = KEY_2,
@@ -93,6 +94,7 @@ const unsigned short scancode_map[0x201] = {
     [0x57] = KEY_F11,
     [0x58] = KEY_F12,
 
+    // Release
     [0x01 + 0x80] = KEY_ESCAPE,
     [0x02 + 0x80] = KEY_1,
     [0x03 + 0x80] = KEY_2,
@@ -181,6 +183,7 @@ const unsigned short scancode_map[0x201] = {
     [0x58 + 0x80] = KEY_F12,
 
     // Extended scancodes (0x100 + second_byte)
+    // Press
     [0x11C] = KEY_NUM_ENTER,   // 0xE0 0x1C
     [0x11D] = KEY_RCTRL,       // 0xE0 0x1D
     [0x12A] = KEY_PRINT_SCREEN,// 0xE0 0x2A 0xE0 0x37 (last 2 bytes unused for keycode)
@@ -200,6 +203,7 @@ const unsigned short scancode_map[0x201] = {
     [0x15C] = KEY_RGUI,        // 0xE0 0x5C (Right Windows)
     [0x15D] = KEY_APPS,        // 0xE0 0x5D (Menu key)
 
+    // Release
     [0x11C + 0x80] = KEY_NUM_ENTER,   // 0xE0 0x1C
     [0x11D + 0x80] = KEY_RCTRL,       // 0xE0 0x1D
     [0x12A + 0x80] = KEY_PRINT_SCREEN,// 0xE0 0x2A 0xE0 0x37 (last 2 bytes unused for keycode)
@@ -221,5 +225,6 @@ const unsigned short scancode_map[0x201] = {
 
 
     // Special Scancodes
+    // Released as soon as they are pressed
     [0x200] = KEY_PAUSE,       // Pause/Break
 };
