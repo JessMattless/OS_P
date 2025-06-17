@@ -6,6 +6,14 @@ OS_P is an operating system I began development on when I was 17 during my secon
 After recently picking it up again I am more determined than ever to make something special with this project, and I am excited to learn and see how far I can get with it.
 
 Currently I have not made this system for use on anything other than QEMU, although eventually I want to get it working with programs like VirtualBox, and hopefully at some point even get it to work on an actual computer.
+## Currently Working
+
+- Bootloader
+- Kernel
+- PIC
+- Screen Driver running custom fonts in graphics mode
+- Basic Keyboard Driver allowing writing text to the screen, and deleting it. Based on UK keyboard layout
+
 ## Run Locally
 
 I made this project using VSCode on windows, the way I run/test it is through running QEMU through the console on windows, but I run all make steps through a linux terminal on WSL.
@@ -48,6 +56,7 @@ Currently there are a few things I want to implement with this program:
 
 - A command terminal
 - A file system
+- Mouse Driver
 - To be able to run some less text-based programs... Mostly Doom I wanna make Doom
 
 ## Support
