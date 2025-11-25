@@ -1,4 +1,6 @@
 #include "screen.h"
+#include "text_mode.h"
+#include "terminal_mode.h"
 #include "bytes.h"
 #include "idt.h"
 #include "pic.h"
@@ -11,7 +13,6 @@ void kernel_main(void) {
     RTC_init();
 
     screen_init();
-    clear_screen();
 
     init_IDT();
 
@@ -25,10 +26,11 @@ void kernel_main(void) {
     // Enable interrupts for the system
     STI();
 
-    set_cursor(0, 0);
+    change_screen_mode(TERMINAL_MODE);
 
-    while (1) {        
-        draw_cursor();
+    while (1) {
+        screen_handler();
+
         wait();
     } // Infinite loop to keep the kernel running
 }

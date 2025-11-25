@@ -2,6 +2,7 @@
 #include "bytes.h"
 #include "interrupts.h"
 #include "screen.h"
+#include "text_mode.h"
 
 // https://wiki.osdev.org/PS/2_Keyboard
 
@@ -177,94 +178,10 @@ void handle_keycode(unsigned short keycode) {
     enum keyboard_layout layout_key = scancode_map[keycode];
     if (layout_key == KEY_NULL) return; // Not mapped
 
-    // TODO: Text mode only
-    // Check for key press, discard if released
-    if (keycode < 0x180) {
-        // Directional key input for text mode
-        switch (layout_key) {
-            case KEY_LEFT:
-                if (screen_index > 0) {
-                    // If pressing left would put the cursor on the previous line
-                    if ((screen_index % CHARS_PER_LINE) == 0) {
-                        int prev_line_end = screen_index - 1;
-                        int prev_line_start = prev_line_end - (prev_line_end % CHARS_PER_LINE);
-
-                        // If the last char of the previous line is not a space, just move back one
-                        if (screen[prev_line_end] != ' ') {
-                            screen_index--;
-                        }
-                        else {
-                            // Scan left for the closest non-space or newline
-                            // If none are found, go to the start of the previous line
-                            int target = prev_line_start;
-                            for (int j = prev_line_end; j >= prev_line_start; j--) {
-                                if (screen[j] == '\n') {
-                                    target = j;
-                                    break;
-                                }
-                                if (screen[j] != ' ') {
-                                    target = j + 1;
-                                    break;
-                                }
-                            }
-                            screen_index = target;
-                        }
-                    } else screen_index--;
-                    draw_screen();
-                    draw_cursor();
-                }
-                return;
-            case KEY_RIGHT:
-                // TODO: Get this working with reducing screen_length when backspacing
-                if (screen_index < (MAX_LINES * CHARS_PER_LINE) - 1 && screen_index < screen_length) {
-                    if (screen[screen_index] == '\n') screen_index += CHARS_PER_LINE - (screen_index % CHARS_PER_LINE);
-                    else screen_index++;
-                    draw_screen();
-                    draw_cursor();
-                }
-                return;
-            case KEY_UP:
-                // TODO: Make this work with newlines properly
-                if (screen_index > CHARS_PER_LINE - 1) {
-                    screen_index -= CHARS_PER_LINE;
-                    draw_screen();
-                    draw_cursor();
-                }
-                return;
-            case KEY_DOWN:
-                // TODO: Make this work with newlines properly
-                if (screen_index < (MAX_LINES * CHARS_PER_LINE) - CHARS_PER_LINE - 1 && screen_index + CHARS_PER_LINE < screen_length) {
-                    screen_index += CHARS_PER_LINE;
-                    draw_screen();
-                    draw_cursor();
-                }
-                return;
-            default: break;
-        }
-    }
-
-    // If keycode is a mapping code
-    if (keycode < 0x80 || (keycode >= 0x100 && (keycode & 0x7F) < 0x80)) {
-        kb.keys[layout_key] = 1;
-
-        // Set key flags
-        if (layout_key == KEY_LSHIFT || layout_key == KEY_RSHIFT) kb.key_flags |= 0b00001000;
-        else if (layout_key == KEY_LCTRL || layout_key == KEY_RCTRL) kb.key_flags |= 0b00000100;
-        else if (layout_key == KEY_LALT || layout_key == KEY_RALT) kb.key_flags |= 0b00000010;
-        else if (layout_key == KEY_LGUI || layout_key == KEY_RGUI) kb.key_flags |= 0b00000001;
-
-        // TODO: Text mode only
-        if (!get_keyboard_key_held(layout_key)) print_char(get_ascii(layout_key));
-    }
-    // Else it's a breaking code
-    else {
-        kb.keys[layout_key] = 0;
-
-        // Break key flags
-        if (layout_key == KEY_LSHIFT || layout_key == KEY_RSHIFT) kb.key_flags &= 0b11110111;
-        else if (layout_key == KEY_LCTRL || layout_key == KEY_RCTRL) kb.key_flags &= 0b11111011;
-        else if (layout_key == KEY_LALT || layout_key == KEY_RALT) kb.key_flags &= 0b11111101;
-        else if (layout_key == KEY_LGUI || layout_key == KEY_RGUI) kb.key_flags &= 0b11111110;
+    switch (current_screen_mode) {
+        case TEXT_MODE: case TERMINAL_MODE:
+            handle_text_input(keycode);
+        default: break;
     }
 }
 
